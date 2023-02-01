@@ -4,12 +4,14 @@ const config = require("../config");
 mongoose.set("strictQuery", false);
 
 module.exports = async () => {
-    const connection = await mongoose
+    await mongoose
         .connect(config.databaseURL, {
             useNewUrlParser: true,
             useUnifiedTopology: true,
         })
-        .catch((error) => handleError(error));
+        .then(() => console.log("Successfully connected database"))
+        .catch((err) => console.error(err));
 
-    return connection.connection.db;
+    mongoose.connection.on("disconnected", () => console.log("Disconnected database "));
+    return mongoose.connection.db;
 };
