@@ -1,13 +1,20 @@
+const http = require("http");
 const express = require("express");
 
 const config = require("./src/config");
 const loaders = require("./src/loaders");
+const socketHandler = require("./src/services/socket");
 
 const startServer = async () => {
     const app = express();
+    const server = http.createServer(app);
+    const { Server } = require("socket.io");
+    const io = new Server(server);
 
     await loaders(app);
-    app.listen(config.port);
+    socketHandler(io);
+
+    server.listen(config.port);
     app.on("error", onError);
     app.on("listening", onListening);
 };
