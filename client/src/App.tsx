@@ -9,8 +9,8 @@ const App = () => {
       <GlobalStyle />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home/>} />
-          <Route path="/lobby" element={<Lobby/>} />
+          <Route path="/" element={<Home />} />
+          <Route path="/lobby" element={<Lobby />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
