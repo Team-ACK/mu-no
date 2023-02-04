@@ -1,7 +1,7 @@
 const home = require("./home/home");
-const app = require("express").Router();
+const router = require("express").Router();
 
 module.exports = () => {
-    home(app);
-    return app;
+    home(router);
+    return router;
 };
