@@ -12,7 +12,7 @@ const App = () => {
           <Route path="/" element={<Home />}>
             <Route path=":paramRoomCode" element={<Home />} />
           </Route>
-          <Route path="/lobby" element={<Lobby />} />
+          <Route path="/:_/lobby" element={<Lobby />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
