@@ -9,7 +9,9 @@ const App = () => {
       <GlobalStyle />
       <BrowserRouter>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Home />}>
+            <Route path=":paramRoomCode" element={<Home />} />
+          </Route>
           <Route path="/lobby" element={<Lobby />} />
         </Routes>
       </BrowserRouter>

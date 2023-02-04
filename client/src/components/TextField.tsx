@@ -1,27 +1,24 @@
 import styled from "styled-components";
 
-interface Props {
-  type: string;
-  placeholder: string;
-}
-
 const S = {
   Field: styled.input`
     ${(props) => props.theme.typography.caption};
-    border: 1px solid ${(props) => props.theme.palette.lightgray};
-    width: fit-content;
-    padding: 1rem;
-    border-radius: 0.5rem;
+    margin: 7px;
+    border: 1px solid rgb(0, 0, 0, 0.2);
+    width: ${({ size }) => size};
+    height: 46px;
+    padding: 5px 10px;
+    border-radius: 11px;
     :focus {
       outline: none;
-      border: 1px solid ${(props) => props.theme.palette.black};
+      border: 1px solid #696eff;
     }
     ::placeholder {
-      color: ${(props) => props.theme.palette.gray};
+      color: #bdbdbd;
     }
   `,
 };
 
-const TextField: React.FC<Props> = (props) => <S.Field {...props} />;
+const TextField: React.FC<any> = (props) => <S.Field {...props} />;
 
 export default TextField;

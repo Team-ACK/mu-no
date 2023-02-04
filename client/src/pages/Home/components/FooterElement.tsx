@@ -9,6 +9,7 @@ const LayoutStyle = styled.div`
 `;
 
 const LogoStyle = styled.a`
+  cursor: pointer;
   background-position: center !important;
   background-size: cover !important;
   height: 45px;

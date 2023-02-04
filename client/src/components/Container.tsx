@@ -9,14 +9,16 @@ const S = {
   `,
 
   InnerContainer: styled.div`
+    // background: #ffcc58;
     width: 1200px;
     height: 800px;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding: 10px 15px 10px 15px;
-    border: 1px solid ${(props) => props.theme.palette.black};
+    padding: 15px;
+    border: 1px solid ${(props) => props.theme.palette.borderColor};
+    box-shadow: 0px 0px 10px 2px ${(props) => props.theme.palette.shadowColor};
     border-radius: 12px;
   `,
 };
