@@ -1,6 +1,7 @@
 import styled from "styled-components";
-import { Container, TextField } from "../../components";
-import { FooterElement, MainElement } from "./components";
+import { useParams } from "react-router-dom";
+import { Container } from "../../components";
+import { HeaderElement, MainElement, FooterElement } from "./components";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -27,14 +28,16 @@ const S = {
 };
 
 const Home = () => {
+  const { paramRoomCode } = useParams();
+
   return (
     <Container>
       <>
         <S.HeaderLayout>
-          <h1>헤더</h1>
+          <HeaderElement />
         </S.HeaderLayout>
         <S.MainLayout>
-          <MainElement />
+          <MainElement paramRoomCode={paramRoomCode} />
         </S.MainLayout>
         <S.FooterLayout>
           <FooterElement />
