@@ -1,23 +1,28 @@
 import styled from "styled-components";
-import { Container } from "../../components";
+import { Container, TextField } from "../../components";
+import { FooterElement, MainElement } from "./components";
 
 const LayoutStyle = styled.div`
   display: flex;
+  flex-direction: row;
   justify-content: center;
   align-items: center;
   width: 100%;
-  border: 1px solid red;
+  // border: 1px solid red;
 `;
 
 const S = {
   HeaderLayout: styled(LayoutStyle)`
-    flex-grow: 6;
+    flex-basis: 26%;
   `,
   MainLayout: styled(LayoutStyle)`
-    flex-grow: 15;
+    justify-content: space-between;
+    padding: 0px 15px;
+    flex-basis: 67%;
   `,
   FooterLayout: styled(LayoutStyle)`
-    flex-grow: 2;
+    align-items: end;
+    flex-basis: 7%;
   `,
 };
 
@@ -29,10 +34,10 @@ const Home = () => {
           <h1>헤더</h1>
         </S.HeaderLayout>
         <S.MainLayout>
-          <h1>메인</h1>
+          <MainElement />
         </S.MainLayout>
         <S.FooterLayout>
-          <h1>푸터</h1>
+          <FooterElement />
         </S.FooterLayout>
       </>
     </Container>
