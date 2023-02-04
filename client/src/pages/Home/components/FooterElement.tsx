@@ -59,7 +59,7 @@ const FooterElement = () => {
   return (
     <>
       <S.GameLogoLayout>
-        <S.GameLogo />
+        <S.GameLogo href="/" />
       </S.GameLogoLayout>
 
       <S.InfoLayout>
@@ -75,7 +75,7 @@ const FooterElement = () => {
       </S.InfoLayout>
 
       <S.TeamLogoLayout>
-        <S.TeamLogo />
+        <S.TeamLogo href="https://github.com/Team-ACK" />
       </S.TeamLogoLayout>
     </>
   );

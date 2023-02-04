@@ -14,7 +14,7 @@ const S = {
 };
 
 const HeaderElement = () => {
-  return <S.GameLogo />;
+  return <S.GameLogo href="/" />;
 };
 
 export default HeaderElement;
