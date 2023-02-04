@@ -15,7 +15,7 @@ const S = {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    padding: 30px;
+    padding: 10px 15px 10px 15px;
     border: 1px solid ${(props) => props.theme.palette.black};
     border-radius: 12px;
   `,
