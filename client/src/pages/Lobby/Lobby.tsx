@@ -1,5 +1,14 @@
+import styled from "styled-components";
+import { userStore } from "../../store";
+
 const Lobby = () => {
-  return <div>바윙</div>;
+  const { nickname, userColor } = userStore();
+
+  return (
+    <div>
+      {userColor} {nickname}
+    </div>
+  );
 };
 
 export default Lobby;
