@@ -2,12 +2,12 @@ const theme = {
   palette: {
     white: "#ffffff",
     black: "#393a43",
+    lightgray: '#fafafa',
   },
   typography: {
-    title: {
+    caption: {
       fontFamily: '"Noto Sans KR", sans-serif',
-      fontSize: "4rem",
-      fontWeight: 600,
+      fontSize: '0.875rem',
     },
   },
 };
