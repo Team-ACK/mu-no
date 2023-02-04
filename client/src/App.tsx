@@ -1,9 +1,20 @@
+import io from "socket.io-client"; // Client Socket
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import { GlobalStyle, theme } from "./styles";
 import { Home, Lobby } from "./pages";
+import { useEffect } from "react";
 
 const App = () => {
+  useEffect(() => {
+    const socket: any = io("http://localhost:8080");
+
+    socket.emit("clientEmit", () => {});
+    socket.on("welcome", (res: any) => {
+      console.log(res);
+    });
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyle />
