@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { ReactComponent as ProfileImg } from "../../../assets/img/profile_img.svg";
-import { TextField, Button } from "../../../components";
-import { userStore } from "../../../store";
+import { TextField, Button, Profile } from "../../../components";
+import { userStore, socketStore } from "../../../store";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -59,18 +58,10 @@ const S = {
   NicknameSection: styled(FlexAlignStyle)`
     flex-basis: 65%;
   `,
-  Profile: styled(FlexAlignStyle)`
-    width: 158px;
-    height: 158px;
-    border-radius: 50%;
-    border: 1px solid rgba(0, 0, 0, 0.2);
-    flex-direction: row;
-  `,
   NicknameInfo: styled.h2`
     margin-bottom: 5px;
     ${(props) => props.theme.typography.information};
   `,
-
   TabButton: styled(FlexAlignStyle)`
     cursor: pointer;
     ${(props) => props.theme.typography.information};
@@ -86,10 +77,11 @@ const S = {
   `,
 };
 
-const MainElement = ({ paramRoomCode }: { paramRoomCode: String | undefined }) => {
+const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) => {
   const navigate = useNavigate();
 
-  const { setNickname, setUserColor } = userStore();
+  const { setRoomCode, setNickname, setUserColor, setIsHost } = userStore();
+  const { socket } = socketStore();
 
   const generateRandNickname = (min: number, max: number): string => {
     return `익명${(Math.random() * (max - min) + min).toFixed()}`;
@@ -109,8 +101,20 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: String | undefined }) =
   const [inputRoomCode, setInputRoomCode] = useState("");
   const [inputUserNickname, setInputUserNickname] = useState("");
 
-  const generateRoom = () => {
-    console.log(`방 생성 이벤트`);
+  const createRoom = () => {
+    setNickname(inputUserNickname === "" ? annonNickname : inputUserNickname);
+    setUserColor(profileColor);
+    if (socket) {
+      socket.emit(
+        "create-room",
+        { nickname: inputUserNickname === "" ? annonNickname : inputUserNickname, userColor: profileColor },
+        (roomCode: string) => {
+          setIsHost(true);
+          setRoomCode(roomCode);
+          navigate(`${roomCode}/lobby`);
+        }
+      );
+    }
   };
 
   const participateRoom = () => {
@@ -118,6 +122,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: String | undefined }) =
     setUserColor(profileColor);
     if (paramRoomCode) {
       // 파라미터를 통해서 방에 입장하려고 할 때
+      setRoomCode(paramRoomCode);
       navigate(`${paramRoomCode}/lobby`);
     }
 
@@ -125,6 +130,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: String | undefined }) =
       // 코드를 직접 입력해서 방에 입장하려고 할 때
       return;
     }
+    setRoomCode(inputRoomCode);
     navigate(`${inputRoomCode}/lobby`);
   };
 
@@ -145,9 +151,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: String | undefined }) =
         <S.ProfileWrapper>
           <S.ProfileImgLayout>
             <S.ProfileImgSection>
-              <S.Profile style={{ backgroundColor: `${profileColor}` }}>
-                <ProfileImg width="150px" height="150px" fill="white" />
-              </S.Profile>
+              <Profile profileColor={profileColor} width="150px" height="150px" />
             </S.ProfileImgSection>
             <S.NicknameSection>
               <S.NicknameInfo>사용할 닉네임 입력</S.NicknameInfo>
@@ -169,7 +173,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: String | undefined }) =
             </Button>
           ) : (
             <>
-              <Button onClick={generateRoom}>방 만들기</Button>
+              <Button onClick={createRoom}>방 만들기</Button>
               <TextField
                 onChange={(e: React.FormEvent<HTMLInputElement>) => {
                   setInputRoomCode(e.currentTarget.value);
