@@ -7,7 +7,7 @@ import { useEffect } from "react";
 
 const App = () => {
   useEffect(() => {
-    const socket: any = io("http://54.250.12.96:8080");
+    const socket: any = io("http://54.250.12.96");
 
     socket.emit("clientEmit", () => {});
     socket.on("welcome", (res: any) => {
