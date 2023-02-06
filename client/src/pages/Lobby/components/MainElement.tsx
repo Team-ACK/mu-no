@@ -67,9 +67,7 @@ const S = {
       width: 20px;
       height: 20px;
       display: flex;
-
       align-items: center;
-
       justify-content: center;
       position: absolute;
       top: 50%;
@@ -95,13 +93,15 @@ const S = {
     }
   `,
   PlayerListLayout: styled(LayoutStyle)`
+    justify-content: start;
     border: 1px solid purple;
     flex-basis: 87.4%;
   `,
   PlayerLayout: styled.div`
     width: 100%;
-    height: 100%;
-    border: 1px solid brown;
+    height: 16.66%;
+    border: 1px solid red;
+    border-radius: 100px 25px 25px 100px;
     margin: 10px 10px 5px 10px;
   `,
 
@@ -113,6 +113,9 @@ const S = {
 const MainElement = () => {
   const populationList: number[] = [2, 3, 4, 5, 6];
   const [population, setPopulation] = useState(4);
+
+  const [element, setElement] = useState<JSX.Element[]>([]);
+
   const { socket } = socketStore();
   const { roomCode } = userStore();
 
@@ -122,6 +125,9 @@ const MainElement = () => {
         플레이어 {data}명
       </option>
     );
+  });
+  const playerList: JSX.Element[] = element.map((data, index) => {
+    return data;
   });
 
   useEffect(() => {
@@ -136,6 +142,14 @@ const MainElement = () => {
     }
   });
 
+  useEffect(() => {
+    const temp: JSX.Element[] = [];
+
+    for (let i = 0; i < population; i += 1) {
+      temp.push(<S.PlayerLayout />);
+    }
+    setElement(temp);
+  }, [population]);
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPopulation(parseInt(e.currentTarget.value, 10));
   };
@@ -164,9 +178,7 @@ const MainElement = () => {
             </S.PlayerCountLayout>
           </S.SelectorLayout>
 
-          <S.PlayerListLayout>
-            <h1>ec</h1>
-          </S.PlayerListLayout>
+          <S.PlayerListLayout>{playerList}</S.PlayerListLayout>
         </S.PlayerListBottom>
       </S.PlayerListWrapper>
 
