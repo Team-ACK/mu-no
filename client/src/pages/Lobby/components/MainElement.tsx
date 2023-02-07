@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { userStore, socketStore } from "../../../store";
+import { Button } from "../../../components";
+
 import DropDown from "../../../assets/img/dropdown.svg";
 
 const LayoutStyle = styled.div`
@@ -96,10 +98,14 @@ const S = {
     justify-content: start;
     border: 1px solid purple;
     flex-basis: 87.4%;
+    overflow-y: overlay;
+    &::-webkit-scrollbar {
+      width: 7px;
+    }
   `,
   PlayerLayout: styled.div`
-    width: 100%;
-    height: 16.66%;
+    width: 93%;
+    height: 90%;
     border: 1px solid red;
     border-radius: 100px 25px 25px 100px;
     margin: 10px 10px 5px 10px;
@@ -107,6 +113,16 @@ const S = {
 
   GameListWrapper: styled(WrapperStyle)`
     flex-basis: 64.2%;
+  `,
+
+  Test: styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    flex-basis: 100px;
+    position: relative;
+    flex-shrink: 0;
   `,
 };
 
@@ -117,7 +133,7 @@ const MainElement = () => {
   const [element, setElement] = useState<JSX.Element[]>([]);
 
   const { socket } = socketStore();
-  const { roomCode } = userStore();
+  const { nickname, userColor, roomCode, isHost } = userStore();
 
   const optionList: JSX.Element[] = populationList.map((data, index) => {
     return (
@@ -146,10 +162,15 @@ const MainElement = () => {
     const temp: JSX.Element[] = [];
 
     for (let i = 0; i < population; i += 1) {
-      temp.push(<S.PlayerLayout />);
+      temp.push(
+        <S.Test>
+          <S.PlayerLayout />
+        </S.Test>
+      );
     }
     setElement(temp);
   }, [population]);
+
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPopulation(parseInt(e.currentTarget.value, 10));
   };
@@ -183,7 +204,7 @@ const MainElement = () => {
       </S.PlayerListWrapper>
 
       <S.GameListWrapper>
-        <h1> 게임 리스트 </h1>
+        {isHost === true ? <Button>게임 시작</Button> : <div>방장이 게임을 시작할 때 까지 대기해 주세요 :)</div>}
       </S.GameListWrapper>
     </S.MainWrapper>
   );
