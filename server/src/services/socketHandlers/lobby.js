@@ -1,8 +1,8 @@
 const Room = require('../../models/room')
 
 module.exports = (io, socket, roomList) => {
-    const getUserList = (roomId) => {
-        const room = io.sockets.adapter.rooms.get(roomId);
+    const getUserList = (roomID) => {
+        const room = io.sockets.adapter.rooms.get(roomID);
         const users = [];
 
         try {
@@ -25,48 +25,45 @@ module.exports = (io, socket, roomList) => {
 
     socket.on("create-room", (data, done) => {
         const { nickname, userColor } = data;
-        const roomId = new Date().getTime().toString(36); // 프런트 쪽에서 roomID다시 날려주는거 구현되면 이거
+        const roomID = new Date().getTime().toString(36); // 프런트 쪽에서 roomID다시 날려주는거 구현되면 이거
 
         socket.admin = true;
         socket.nickname = nickname;
         socket.userColor = userColor;
 
-        socket.join(roomId);
-        const RoomObj = new Room(roomId, getUserList(roomId));
-        roomList.push(RoomObj);
+        socket.join(roomID);
+        const RoomObj = new Room(getUserList(roomID));
+        roomList[roomID]= RoomObj;
 
-        done(roomId);
+        done(roomID);
     });
 
     socket.on("join-room", (data, done) => {
-        const { nickname, userColor, roomId } = data;
-        let isValidRoom, targetRoom = 0;
+        const { nickname, userColor, roomID } = data;
+        const isValidRoom = roomID in roomList;
 
-        roomList.forEach((room) => {  // 방을 굳이 선회를 해야할까요 유빈선생님??
-            isValidRoom = (room.getRoomId() === roomId);
-            targetRoom = room;
-            if (isValidRoom) {return false;} 
-        })
-        
-        
         if(!socket.admin) socket.admin = false;
+        
         socket.nickname = nickname;
         socket.userColor = userColor;
 
         if (isValidRoom) {
-            socket.join(roomId);
-            const userList = getUserList(roomId);
+            const targetRoom = roomList[roomID];
+            const userList = getUserList(roomID);
+            if(!socket.admin) socket.join(roomID);
             targetRoom.setUserList(userList);
-            io.to(roomId).emit("user-list", userList);
+            io.to(roomID).emit("user-list", userList);
         }
+
+        console.log(roomList);
 
         done(isValidRoom);
     });
 
-    socket.on("disconnect", (roomId, done) => {
+    socket.on("disconnect", (roomID, done) => {
         // room ID 넘겨 받기
-        socket.leave(roomId);
-        const userList = getUserList(roomId);
-        io.to(roomId).emit("user-list", userList);
+        socket.leave(roomID);
+        const userList = getUserList(roomID);
+        io.to(roomID).emit("user-list", userList);
     });
 };
