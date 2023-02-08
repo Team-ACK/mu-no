@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { userStore, socketStore } from "../../../store";
+import { userStore } from "../../../store";
 import { Button } from "../../../components";
 
 import DropDown from "../../../assets/img/dropdown.svg";
@@ -103,7 +103,7 @@ const S = {
       width: 7px;
     }
   `,
-  PlayerLayout: styled.div`
+  PlayerLayout: styled(LayoutStyle)`
     width: 93%;
     height: 90%;
     border: 1px solid red;
@@ -132,8 +132,7 @@ const MainElement = () => {
 
   const [element, setElement] = useState<JSX.Element[]>([]);
 
-  const { socket } = socketStore();
-  const { nickname, userColor, roomCode, isHost } = userStore();
+  const { nickname, userColor, roomCode, isHost, userList } = userStore();
 
   const optionList: JSX.Element[] = populationList.map((data, index) => {
     return (
@@ -142,34 +141,21 @@ const MainElement = () => {
       </option>
     );
   });
-  const playerList: JSX.Element[] = element.map((data, index) => {
-    return data;
-  });
-
-  useEffect(() => {
-    if (socket) {
-      socket.emit(
-        "user-list",
-        { roomID: roomCode },
-        (users: [{ admin: boolean; nickname: string; userColor: string }]) => {
-          console.log(users);
-        }
-      );
-    }
-  });
 
   useEffect(() => {
     const temp: JSX.Element[] = [];
 
-    for (let i = 0; i < population; i += 1) {
+    userList.map((data, index) => {
       temp.push(
         <S.Test>
-          <S.PlayerLayout />
+          <S.PlayerLayout>
+            <div>{data.nickname}</div>
+          </S.PlayerLayout>
         </S.Test>
       );
-    }
+    });
     setElement(temp);
-  }, [population]);
+  }, [userList]);
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPopulation(parseInt(e.currentTarget.value, 10));
@@ -199,7 +185,7 @@ const MainElement = () => {
             </S.PlayerCountLayout>
           </S.SelectorLayout>
 
-          <S.PlayerListLayout>{playerList}</S.PlayerListLayout>
+          <S.PlayerListLayout>{element}</S.PlayerListLayout>
         </S.PlayerListBottom>
       </S.PlayerListWrapper>
 

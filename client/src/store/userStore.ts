@@ -1,5 +1,11 @@
 import { create } from "zustand";
 
+type asd = {
+  admin: boolean;
+  nickname: string;
+  userColor: string;
+};
+
 interface User {
   nickname: string;
   setNickname: (nickname: string) => void;
@@ -9,6 +15,8 @@ interface User {
   setIsHost: (isHost: boolean) => void;
   roomCode: string;
   setRoomCode: (roomCode: string) => void;
+  userList: asd[];
+  setUserList: (userList: asd[]) => void;
 }
 
 const userStore = create<User>((set) => ({
@@ -27,6 +35,10 @@ const userStore = create<User>((set) => ({
   roomCode: "",
   setRoomCode: (roomCode) => {
     set((_) => ({ roomCode }));
+  },
+  userList: [],
+  setUserList: (userList) => {
+    set((_) => ({ userList }));
   },
 }));
 

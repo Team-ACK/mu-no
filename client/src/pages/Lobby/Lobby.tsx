@@ -26,18 +26,18 @@ const S = {
 };
 const Lobby = () => {
   const { socket } = socketStore();
-  const { nickname, userColor, roomCode, isHost } = userStore();
+  const { nickname, userColor, roomCode, isHost, setUserList} = userStore();
   const [renderStatus, setRenderStatus] = useState("loading");
 
   useEffect(() => {
-    if (!isHost) {
-      if (socket) {
-        socket.emit("join-room", { nickname, userColor, roomID: roomCode }, (isValid: boolean) => {
-          isValid ? setRenderStatus("valid") : setRenderStatus("invalid");
-        });
-      }
-    } else {
-      setRenderStatus("valid");
+    if (socket) {
+      socket.emit("join-room", { nickname, userColor, roomID: roomCode }, (isValid: boolean) => {
+        isValid ? setRenderStatus("valid") : setRenderStatus("invalid");
+      });
+
+      socket.on("user-list", (data: any) => {
+        setUserList(data);
+      });
     }
     // eslint-disable-next-line
   }, []);
