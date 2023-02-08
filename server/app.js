@@ -3,7 +3,7 @@ const express = require("express");
 
 const config = require("./src/config");
 const loaders = require("./src/loaders");
-const socketHandler = require("./src/services/socket");
+const socketHandler = require("./src/services/socketHandlers");
 
 const startServer = async () => {
     const app = express();
