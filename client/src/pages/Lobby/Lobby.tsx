@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
 import { Container } from "../../components";
-import { userStore, socketStore } from "../../store";
+import { userStore, socketStore, lobbyStore } from "../../store";
 import { HeaderElement, MainElement, Description } from "./components";
 
 const LayoutStyle = styled.div`
@@ -26,7 +26,10 @@ const S = {
 };
 const Lobby = () => {
   const { socket } = socketStore();
-  const { nickname, userColor, roomCode, isHost, setUserList} = userStore();
+  const { nickname, userColor, roomCode} = userStore();
+
+  const {setUserList, setHeadCount} = lobbyStore();
+
   const [renderStatus, setRenderStatus] = useState("loading");
 
   useEffect(() => {
@@ -37,6 +40,7 @@ const Lobby = () => {
 
       socket.on("user-list", (data: any) => {
         setUserList(data);
+        setHeadCount(data.length);
       });
     }
     // eslint-disable-next-line
