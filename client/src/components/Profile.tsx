@@ -2,9 +2,9 @@ import styled from "styled-components";
 import { ReactComponent as ProfileImg } from "../assets/img/profile_img.svg";
 
 type Props = {
-  width: string;
-  profileColor: string;
-  height: string;
+  iconwidth: string | undefined;
+  iconheight: string | undefined;
+  profileColor: string | undefined;
 };
 
 const S = {
@@ -22,9 +22,9 @@ const S = {
   `,
 };
 
-const Profile: React.FC<Props> = ({ width, height, profileColor }: Props) => (
+const Profile: React.FC<Props> = ({ iconwidth, iconheight, profileColor }: Props) => (
   <S.Profile profileColor={profileColor}>
-    <ProfileImg width={width} height={height} fill="white" />
+    <ProfileImg width={iconwidth} height={iconheight} fill="white" />
   </S.Profile>
 );
 
