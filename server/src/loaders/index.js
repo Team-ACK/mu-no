@@ -1,8 +1,8 @@
 const expressLoader = require("./express");
-const mongooseLoader = require("./mongoose");
+//const mongooseLoader = require("./mongoose");
 
 module.exports = async (app) => {
-    const mongoConnection = await mongooseLoader();
+    //const mongoConnection = await mongooseLoader();
 
     await expressLoader(app);
 };
