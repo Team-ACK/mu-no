@@ -108,6 +108,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
       socket.emit(
         "create-room",
         { nickname: inputUserNickname === "" ? annonNickname : inputUserNickname, userColor: profileColor },
+
         (roomCode: string) => {
           setIsHost(true);
           setRoomCode(roomCode);
@@ -151,7 +152,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
         <S.ProfileWrapper>
           <S.ProfileImgLayout>
             <S.ProfileImgSection>
-              <Profile profileColor={profileColor} width="150px" height="150px" />
+              <Profile iconwidth="150px" iconheight="150px" profileColor={profileColor} />
             </S.ProfileImgSection>
             <S.NicknameSection>
               <S.NicknameInfo>사용할 닉네임 입력</S.NicknameInfo>

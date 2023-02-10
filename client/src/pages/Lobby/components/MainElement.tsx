@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import styled from "styled-components";
-import { userStore } from "../../../store";
+import { lobbyStore, userStore } from "../../../store";
 import { Button } from "../../../components";
-
 import DropDown from "../../../assets/img/dropdown.svg";
+import UserCard from "./UserCard";
+// 모든 styled component 및 import 리팩토링 필요
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -103,36 +104,21 @@ const S = {
       width: 7px;
     }
   `,
-  PlayerLayout: styled(LayoutStyle)`
-    width: 93%;
-    height: 90%;
-    border: 1px solid red;
-    border-radius: 100px 25px 25px 100px;
-    margin: 10px 10px 5px 10px;
-  `,
 
   GameListWrapper: styled(WrapperStyle)`
     flex-basis: 64.2%;
-  `,
-
-  Test: styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    flex-basis: 100px;
-    position: relative;
-    flex-shrink: 0;
   `,
 };
 
 const MainElement = () => {
   const populationList: number[] = [2, 3, 4, 5, 6];
+
   const [population, setPopulation] = useState(4);
 
   const [element, setElement] = useState<JSX.Element[]>([]);
 
-  const { nickname, userColor, roomCode, isHost, userList } = userStore();
+  const { isHost } = userStore();
+  const { userList, headCount } = lobbyStore();
 
   const optionList: JSX.Element[] = populationList.map((data, index) => {
     return (
@@ -142,23 +128,35 @@ const MainElement = () => {
     );
   });
 
-  useEffect(() => {
+  const addUserLayout = () => {
     const temp: JSX.Element[] = [];
 
-    userList.map((data, index) => {
+    for (let i = 0; i < population; i += 1) {
       temp.push(
-        <S.Test>
-          <S.PlayerLayout>
-            <div>{data.nickname}</div>
-          </S.PlayerLayout>
-        </S.Test>
+        userList[i] ? (
+          <UserCard profileColor={`${userList[i].userColor}`} nickname={`${userList[i].nickname}`}>
+            <p>{userList[i].admin === true ? "방장임" : "딱가리임"}</p>
+          </UserCard>
+        ) : (
+          <UserCard profileColor="black" nickname="비어있음">
+            <p>x</p>
+          </UserCard>
+        )
       );
-    });
+    }
     setElement(temp);
+  };
+
+  useEffect(() => {
+    addUserLayout();
   }, [userList]);
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPopulation(parseInt(e.currentTarget.value, 10));
+  };
+
+  const gameStart = () => {
+    // code
   };
 
   return (
@@ -170,7 +168,9 @@ const MainElement = () => {
           </S.Player>
 
           <S.PlayerCount>
-            <p>??/??</p>
+            <p>
+              {headCount}/{population}
+            </p>
           </S.PlayerCount>
         </S.PlayerListTop>
 
@@ -190,7 +190,11 @@ const MainElement = () => {
       </S.PlayerListWrapper>
 
       <S.GameListWrapper>
-        {isHost === true ? <Button>게임 시작</Button> : <div>방장이 게임을 시작할 때 까지 대기해 주세요 :)</div>}
+        {isHost === true ? (
+          <Button onCLick={gameStart}>게임 시작</Button>
+        ) : (
+          <div>방장이 게임을 시작할 때 까지 대기해 주세요 :)</div>
+        )}
       </S.GameListWrapper>
     </S.MainWrapper>
   );
