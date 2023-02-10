@@ -1,4 +1,4 @@
-const Room = require('../../models/room')
+const Room = require("../../models/room");
 
 module.exports = (io, socket, roomList) => {
     const getUserList = (roomID) => {
@@ -22,10 +22,9 @@ module.exports = (io, socket, roomList) => {
         return users;
     };
 
-
     socket.on("create-room", (data, done) => {
         const { nickname, userColor } = data;
-        const roomID = new Date().getTime().toString(36); // 프런트 쪽에서 roomID다시 날려주는거 구현되면 이거
+        const roomID = new Date().getTime().toString(36);
 
         socket.admin = true;
         socket.nickname = nickname;
@@ -33,7 +32,7 @@ module.exports = (io, socket, roomList) => {
 
         socket.join(roomID);
         const RoomObj = new Room(getUserList(roomID));
-        roomList[roomID]= RoomObj;
+        roomList[roomID] = RoomObj;
 
         done(roomID);
     });
@@ -42,15 +41,15 @@ module.exports = (io, socket, roomList) => {
         const { nickname, userColor, roomID } = data;
         const isValidRoom = roomID in roomList;
 
-        if(!socket.admin) socket.admin = false;
-        
+        if (!socket.admin) socket.admin = false;
+
         socket.nickname = nickname;
         socket.userColor = userColor;
 
         if (isValidRoom) {
+            if (!socket.admin) socket.join(roomID);
             const targetRoom = roomList[roomID];
             const userList = getUserList(roomID);
-            if(!socket.admin) socket.join(roomID);
             targetRoom.setUserList(userList);
             io.to(roomID).emit("user-list", userList);
         }
@@ -61,8 +60,10 @@ module.exports = (io, socket, roomList) => {
     });
 
     socket.on("disconnect", (roomID, done) => {
-        // room ID 넘겨 받기
+        // TODO: room ID 넘겨 받기
+        if (socket.admin) socket.admin = false;
         socket.leave(roomID);
+
         const userList = getUserList(roomID);
         io.to(roomID).emit("user-list", userList);
     });
