@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import { GlobalStyle, theme } from "./styles";
-import { Home, Lobby } from "./pages";
+import { Home, Lobby, Reaction } from "./pages";
 import { socketStore } from "./store";
 
 import { useEffect } from "react";
@@ -22,7 +22,8 @@ const App = () => {
           <Route path="/" element={<Home />}>
             <Route path=":paramRoomCode" element={<Home />} />
           </Route>
-          <Route path="/:_/lobby" element={<Lobby />} />
+          <Route path=":_/lobby" element={<Lobby />} />
+          <Route path=":_/reaction" element={<Reaction />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
