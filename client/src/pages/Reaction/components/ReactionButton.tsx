@@ -59,7 +59,7 @@ const S = {
 };
 
 const ReactionButton: React.FC<any> = (props: any) => {
-  const { stat, speed }: { stat: string; speed?: string } = props;
+  const { stat, speed }: { stat: string; speed?: number } = props;
   const description =
     stat === "ready"
       ? "준비"
@@ -72,7 +72,7 @@ const ReactionButton: React.FC<any> = (props: any) => {
       : stat === "die"
       ? "You Died"
       : // 클릭후 속도를 표시
-        speed;
+        `${speed} ms`;
 
   return <S.Button {...props}>{description}</S.Button>;
 };
