@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { lobbyStore, userStore } from "../../../store";
-import { Button } from "../../../components";
+import { socketStore, lobbyStore, userStore } from "../../../store";
+import { Button, UserCard } from "../../../components";
 import DropDown from "../../../assets/img/dropdown.svg";
-import UserCard from "./UserCard";
 // 모든 styled component 및 import 리팩토링 필요
 
 const LayoutStyle = styled.div`
@@ -111,14 +111,31 @@ const S = {
 };
 
 const MainElement = () => {
+  const navigate = useNavigate();
   const populationList: number[] = [2, 3, 4, 5, 6];
 
   const [population, setPopulation] = useState(4);
 
   const [element, setElement] = useState<JSX.Element[]>([]);
 
-  const { isHost } = userStore();
+  const { socket } = socketStore();
+  const { isHost, roomCode } = userStore();
   const { userList, headCount } = lobbyStore();
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("reaction-game-start", () => {
+        navigate(`/${roomCode}/reaction`);
+      });
+    }
+    return () => {
+      if (socket) {
+        socket.off("reaction-game-start");
+      }
+    };
+
+    // eslint-disable-next-line
+  }, []);
 
   const optionList: JSX.Element[] = populationList.map((data, index) => {
     return (
@@ -134,7 +151,11 @@ const MainElement = () => {
     for (let i = 0; i < population; i += 1) {
       temp.push(
         userList[i] ? (
-          <UserCard profileColor={`${userList[i].userColor}`} nickname={`${userList[i].nickname}`}>
+          <UserCard
+            profileColor={`${userList[i].userColor}`}
+            nickname={`${userList[i].nickname}`}
+            isMe={socket?.id === userList[i].socketID}
+          >
             <p>{userList[i].admin === true ? "방장임" : "딱가리임"}</p>
           </UserCard>
         ) : (
@@ -156,7 +177,11 @@ const MainElement = () => {
   };
 
   const gameStart = () => {
-    // code
+    if (socket) {
+      socket.emit("reaction-game-start", {
+        roomID: roomCode,
+      });
+    }
   };
 
   return (
@@ -191,7 +216,7 @@ const MainElement = () => {
 
       <S.GameListWrapper>
         {isHost === true ? (
-          <Button onCLick={gameStart}>게임 시작</Button>
+          <Button onClick={gameStart}>게임 시작</Button>
         ) : (
           <div>방장이 게임을 시작할 때 까지 대기해 주세요 :)</div>
         )}

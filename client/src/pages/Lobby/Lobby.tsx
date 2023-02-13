@@ -26,9 +26,9 @@ const S = {
 };
 const Lobby = () => {
   const { socket } = socketStore();
-  const { nickname, userColor, roomCode} = userStore();
+  const { nickname, userColor, roomCode } = userStore();
 
-  const {setUserList, setHeadCount} = lobbyStore();
+  const { setUserList, setHeadCount } = lobbyStore();
 
   const [renderStatus, setRenderStatus] = useState("loading");
 

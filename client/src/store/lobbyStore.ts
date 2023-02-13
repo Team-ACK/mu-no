@@ -4,6 +4,7 @@ type datainfo = {
   admin: boolean;
   nickname: string;
   userColor: string;
+  socketID: string;
 };
 
 interface Lobby {

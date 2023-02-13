@@ -11,7 +11,7 @@ const S = {
     border-radius: 11px;
     :focus {
       outline: none;
-      border: 1px solid #696eff;
+      border: 1px solid #808088;
     }
     ::placeholder {
       color: #bdbdbd;

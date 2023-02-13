@@ -16,6 +16,10 @@ const theme = {
       fontFamily: '"Noto Sans KR", sans-serif',
       fontSize: "20px",
     },
+    reactionButton: {
+      fontFamily: '"Noto Sans KR", sans-serif',
+      fontSize: "32px",
+    },
     input: {
       fontFamily: '"Noto Sans KR", sans-serif',
       fontSize: "27px",
