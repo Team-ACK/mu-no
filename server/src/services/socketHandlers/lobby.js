@@ -1,7 +1,7 @@
 const Room = require("../../models/room");
 
 module.exports = (io, socket, roomList, getUserList) => {
-    socket.on("create-room", (data, done) => {
+    socket.on("create-room", (done) => {
         const roomID = new Date().getTime().toString(36);
 
         socket.admin = true;
