@@ -107,7 +107,6 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
     if (socket) {
       socket.emit(
         "create-room",
-        { nickname: inputUserNickname === "" ? annonNickname : inputUserNickname, userColor: profileColor },
 
         (roomCode: string) => {
           setIsHost(true);
