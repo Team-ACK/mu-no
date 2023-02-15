@@ -1,4 +1,6 @@
-module.exports = (io, socket, roomList, Room, getUserList) => {
+const Room = require("../../models/room");
+
+module.exports = (io, socket, roomList, getUserList) => {
     socket.on("create-room", (data, done) => {
         const roomID = new Date().getTime().toString(36);
 
@@ -33,9 +35,11 @@ module.exports = (io, socket, roomList, Room, getUserList) => {
 
     socket.on("disconnect", ({ roomID }, done) => {
         // TODO: room ID 넘겨 받기
-        if (socket.admin) socket.admin = false;
-        socket.leave(roomID);
-        const userList = getUserList(roomID);
-        io.to(roomID).emit("user-list", userList);
+        if (roomID !== undefined) {
+            if (socket.admin) socket.admin = false;
+            socket.leave(roomID);
+            const userList = getUserList(roomID);
+            io.to(roomID).emit("user-list", userList);
+        }
     });
 };

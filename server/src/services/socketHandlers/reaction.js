@@ -8,10 +8,10 @@ module.exports = (io, socket, roomList, getUserList) => {
         console.log("finished game");
     };
 
-    socket.on("reaction-game-start", ({ roomID }) => {
+    socket.on("reaction-selected", ({ roomID }) => {
         roomList[roomID].setGameTitle("reaction");
         roomList[roomID].setTargetResultCounts(getUserList(roomID).length);
-        io.to(roomID).emit("reaction-game-start");
+        io.to(roomID).emit("reaction-selected");
     });
 
     socket.on("reaction-game-user-result", ({ roomID, speed }) => {

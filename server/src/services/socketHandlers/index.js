@@ -1,8 +1,6 @@
 const lobbyHandler = require("./lobby");
 const reactionHandler = require("./reaction");
 
-const Room = require("../../models/room");
-
 module.exports = (io) => {
     const roomList = {};
 
@@ -30,7 +28,7 @@ module.exports = (io) => {
     };
 
     io.on("connection", (socket) => {
-        lobbyHandler(io, socket, roomList, Room, getUserList);
+        lobbyHandler(io, socket, roomList, getUserList);
         reactionHandler(io, socket, roomList, getUserList);
     });
 };
