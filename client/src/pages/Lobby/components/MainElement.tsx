@@ -124,13 +124,13 @@ const MainElement = () => {
 
   useEffect(() => {
     if (socket) {
-      socket.on("reaction-game-start", () => {
+      socket.on("reaction-selected", () => {
         navigate(`/${roomCode}/reaction`);
       });
     }
     return () => {
       if (socket) {
-        socket.off("reaction-game-start");
+        socket.off("reaction-selected");
       }
     };
 
@@ -178,7 +178,7 @@ const MainElement = () => {
 
   const gameStart = () => {
     if (socket) {
-      socket.emit("reaction-game-start", {
+      socket.emit("reaction-selected", {
         roomID: roomCode,
       });
     }
