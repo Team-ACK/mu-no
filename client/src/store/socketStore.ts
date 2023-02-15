@@ -9,7 +9,7 @@ interface User {
 const socketStore = create<User>((set) => ({
   socket: null,
   setSocket: () => {
-    set((_) => ({ socket: io("http://localhost:8080/") }));
+    set((_) => ({ socket: io() }));
   },
 }));
 
