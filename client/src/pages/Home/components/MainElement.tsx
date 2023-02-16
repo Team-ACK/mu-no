@@ -149,7 +149,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
               <Profile iconWidth="150px" iconHeight="150px" profileColor={profileColor} />
             </S.ProfileImgSection>
             <S.NicknameSection>
-              <S.NicknameInfo>사용할 닉네임 입력</S.NicknameInfo>
+              w<S.NicknameInfo>사용할 닉네임 입력</S.NicknameInfo>
               <TextField
                 onChange={(e: React.FormEvent<HTMLInputElement>) => {
                   setInputUserNickname(e.currentTarget.value);
