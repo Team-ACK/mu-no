@@ -6,7 +6,6 @@ const S = {
     padding: 5px 20px;
     border: none;
     border-radius: 11px;
-    box-sizing: border-box;
     cursor: pointer;
     ${(props) => props.theme.typography.button};
     background-color: #696eff;

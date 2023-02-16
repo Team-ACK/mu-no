@@ -1,21 +1,20 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { TextField, Button, Profile } from "../../../components";
 import { userStore, socketStore } from "../../../store";
 
 const LayoutStyle = styled.div`
   display: flex;
   border: 1px solid ${(props) => props.theme.palette.black};
-  height: 87.8%;
   border-radius: 12px;
+  height: 87.8%;
 `;
 
 const LoginFormStyle = styled.div`
   display: flex;
   justify-content: center;
   width: 100%;
-  /* border: 1px solid red; */
   border-radius: 12px;
 `;
 
@@ -124,14 +123,10 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
       // 파라미터를 통해서 방에 입장하려고 할 때
       setRoomCode(paramRoomCode);
       navigate(`${paramRoomCode}/lobby`);
+    } else {
+      setRoomCode(inputRoomCode);
+      navigate(`${inputRoomCode}/lobby`);
     }
-
-    if (inputRoomCode === "") {
-      // 코드를 직접 입력해서 방에 입장하려고 할 때
-      return;
-    }
-    setRoomCode(inputRoomCode);
-    navigate(`${inputRoomCode}/lobby`);
   };
 
   return (
@@ -151,7 +146,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
         <S.ProfileWrapper>
           <S.ProfileImgLayout>
             <S.ProfileImgSection>
-              <Profile iconwidth="150px" iconheight="150px" profileColor={profileColor} />
+              <Profile iconWidth="150px" iconHeight="150px" profileColor={profileColor} />
             </S.ProfileImgSection>
             <S.NicknameSection>
               <S.NicknameInfo>사용할 닉네임 입력</S.NicknameInfo>

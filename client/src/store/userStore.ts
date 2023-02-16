@@ -1,7 +1,6 @@
 import { create } from "zustand";
 
-
-interface User {
+interface UserStoreType {
   nickname: string;
   setNickname: (nickname: string) => void;
   userColor: string;
@@ -10,10 +9,9 @@ interface User {
   setIsHost: (isHost: boolean) => void;
   roomCode: string;
   setRoomCode: (roomCode: string) => void;
-
 }
 
-const userStore = create<User>((set) => ({
+const userStore = create<UserStoreType>((set) => ({
   nickname: "",
   setNickname: (nickname) => {
     set((_) => ({ nickname }));
@@ -29,7 +27,7 @@ const userStore = create<User>((set) => ({
   roomCode: "",
   setRoomCode: (roomCode) => {
     set((_) => ({ roomCode }));
-  }
+  },
 }));
 
 export default userStore;

@@ -2,8 +2,8 @@ import styled from "styled-components";
 import { ReactComponent as ProfileImg } from "../assets/img/profile_img.svg";
 
 type Props = {
-  iconwidth: string | undefined;
-  iconheight: string | undefined;
+  iconWidth: string | undefined;
+  iconHeight: string | undefined;
   profileColor: string | undefined;
 };
 
@@ -12,19 +12,18 @@ const S = {
     display: flex;
     align-items: center;
     justify-content: center;
-    flex-direction: column;
+    flex-direction: row;
     width: 158px;
     height: 158px;
     border-radius: 50%;
     border: 1px solid rgba(0, 0, 0, 0.2);
-    flex-direction: row;
     background-color: ${({ profileColor }: { profileColor: string | undefined }) => profileColor};
   `,
 };
 
-const Profile: React.FC<Props> = ({ iconwidth, iconheight, profileColor }: Props) => (
+const Profile: React.FC<Props> = ({ iconWidth, iconHeight, profileColor }: Props) => (
   <S.Profile profileColor={profileColor}>
-    <ProfileImg width={iconwidth} height={iconheight} fill="white" />
+    <ProfileImg width={iconWidth} height={iconHeight} fill="white" />
   </S.Profile>
 );
 

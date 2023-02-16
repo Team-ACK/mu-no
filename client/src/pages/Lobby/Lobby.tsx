@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
 import styled from "styled-components";
+import { useState, useEffect } from "react";
 import { Container } from "../../components";
 import { userStore, socketStore, lobbyStore } from "../../store";
 import { HeaderElement, MainElement, Description } from "./components";
@@ -24,25 +24,31 @@ const S = {
     flex-basis: 82.2%;
   `,
 };
+
 const Lobby = () => {
   const { socket } = socketStore();
   const { nickname, userColor, roomCode } = userStore();
-
   const { setUserList, setHeadCount } = lobbyStore();
 
   const [renderStatus, setRenderStatus] = useState("loading");
 
   useEffect(() => {
-    if (socket) {
-      socket.emit("join-room", { nickname, userColor, roomID: roomCode }, (isValid: boolean) => {
-        isValid ? setRenderStatus("valid") : setRenderStatus("invalid");
-      });
-
-      socket.on("user-list", (data: any) => {
-        setUserList(data);
-        setHeadCount(data.length);
-      });
+    if (!nickname) {
+      window.location.replace("/");
     }
+
+    socket?.emit("join-room", { nickname, userColor, roomID: roomCode }, (isValid: boolean) => {
+      isValid ? setRenderStatus("valid") : setRenderStatus("invalid");
+    });
+
+    socket?.on("user-list", (data: any) => {
+      setUserList(data);
+      setHeadCount(data.length);
+    });
+
+    return () => {
+      socket?.off("user-list");
+    };
     // eslint-disable-next-line
   }, []);
 

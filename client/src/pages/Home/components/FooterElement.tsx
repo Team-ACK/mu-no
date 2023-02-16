@@ -22,7 +22,6 @@ const S = {
   `,
   InfoLayout: styled(LayoutStyle)`
     align-self: center;
-    justify-content: center;
     flex-basis: 70%;
   `,
   TeamLogoLayout: styled(LayoutStyle)`

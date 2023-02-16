@@ -1,15 +1,16 @@
-import { io, Socket } from "socket.io-client";
 import { create } from "zustand";
+import { io, Socket } from "socket.io-client";
 
-interface User {
+interface SocketStoreType {
   socket: Socket | null;
   setSocket: () => void;
 }
 
-const socketStore = create<User>((set) => ({
+const socketStore = create<SocketStoreType>((set) => ({
   socket: null,
   setSocket: () => {
-    set((_) => ({ socket: io("http://muno.fun/") }));
+    set((_) => ({ socket: io("http://localhost:8080") }));
+    // set((_) => ({ socket: io("http://muno.fun/") }));
   },
 }));
 
