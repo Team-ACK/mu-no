@@ -9,8 +9,8 @@ interface SocketStoreType {
 const socketStore = create<SocketStoreType>((set) => ({
   socket: null,
   setSocket: () => {
-    set((_) => ({ socket: io("http://localhost:8080") }));
-    // set((_) => ({ socket: io("http://muno.fun/") }));
+    // set((_) => ({ socket: io("http://localhost:8080") }));
+    set((_) => ({ socket: io("http://muno.fun/") }));
   },
 }));
 
