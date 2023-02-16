@@ -6,6 +6,8 @@ type Props = {
   profileColor: string;
   nickname: string;
   isMe?: boolean;
+  divWidth: string | undefined;
+  speed?: string;
 };
 
 const LayoutStyle = styled.div`
@@ -51,13 +53,17 @@ const S = {
     color: ${({ isMe }: { isMe?: boolean }) => (isMe ? "green" : "black")};
   `,
   UserAuthLayout: styled(LayoutStyle)`
-    width: 50px;
+    flex-direction: row;
+    width: ${({ divWidth }: { divWidth: string | undefined }) => divWidth};
     height: 50px;
     margin-right: 15px;
   `,
+  ScoreLayout: styled(LayoutStyle)`
+    width: 60px;
+  `,
 };
 
-const UserCard: React.FC<Props> = ({ children, profileColor, nickname, isMe }: Props) => (
+const UserCard: React.FC<Props> = ({ children, profileColor, nickname, isMe, divWidth, speed }: Props) => (
   <S.Wrapper>
     <S.PlayerLayout>
       <S.UserImgLayout profileColor={profileColor}>
@@ -66,7 +72,10 @@ const UserCard: React.FC<Props> = ({ children, profileColor, nickname, isMe }: P
 
       <S.UserNameLayout isMe={isMe}>{nickname}</S.UserNameLayout>
 
-      <S.UserAuthLayout>{children}</S.UserAuthLayout>
+      {divWidth === "54px" ? (
+        <S.ScoreLayout>{speed === "0" || speed === undefined ? " " : `${speed}ms `}</S.ScoreLayout>
+      ) : null}
+      <S.UserAuthLayout divWidth={divWidth}>{children}</S.UserAuthLayout>
     </S.PlayerLayout>
   </S.Wrapper>
 );
