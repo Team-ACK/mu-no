@@ -17,17 +17,30 @@ const S = {
   GameWrapper: styled(LayoutStyle)`
     flex-direction: column;
   `,
-  WhiteSpace: styled(LayoutStyle)`
+  GameMain: styled(LayoutStyle)``,
+  WhiteSpaceTop: styled(LayoutStyle)`
     align-items: end;
     flex-basis: 45%;
   `,
-  GameMain: styled(LayoutStyle)``,
+  WhiteSpaceBottom: styled(LayoutStyle)`
+    flex-basis: 30%;
+  `,
   GameLayout: styled(LayoutStyle)`
     flex-basis: 43.6%;
   `,
   PlayerLayout: styled(LayoutStyle)`
     flex-direction: column;
     flex-basis: 28.2%;
+  `,
+  RoundContainer: styled(LayoutStyle)`
+    width: 30%;
+    height: 60%;
+    border: 1px solid lightgray;
+    border-radius: 11px;
+  `,
+  Round: styled.p`
+    font-weight: 500;
+    font-size: 34px;
   `,
 };
 
@@ -37,6 +50,7 @@ type participantType = {
   userColor: string;
   socketID: string;
   isDied: boolean;
+  recentSpeed: number;
 };
 
 const Reaction = () => {
@@ -46,10 +60,12 @@ const Reaction = () => {
     const copy = JSON.parse(JSON.stringify(userList));
     for (const element of copy) {
       element.isDied = false;
+      element.recentSpeed = 0;
     }
     return copy;
   };
 
+  const [round, setRound] = useState(0);
   const [participant, setParticipant] = useState<participantType[]>(addDiedProps);
   const [stat, setStat] = useState<string>("ready");
   const [speed, setSpeed] = useState<number>(0);
@@ -69,14 +85,26 @@ const Reaction = () => {
       temp.push(
         participant[i] ? (
           <UserCard
+            speed={participant[i].recentSpeed.toString()}
+            divWidth="54px"
             profileColor={`${participant[i].userColor}`}
             nickname={`${participant[i].nickname}`}
             isMe={socket?.id === userList[i].socketID}
           >
-            <p>{participant[i].isDied ? "사망 ❌" : "생존 ✅"}</p>
+            {participant[i].isDied ? (
+              <>
+                <p style={{ display: "flex" }}>사망</p>
+                <span>❌</span>
+              </>
+            ) : (
+              <>
+                <p style={{ display: "flex" }}>생존</p>
+                <span>✅</span>
+              </>
+            )}
           </UserCard>
         ) : (
-          <UserCard profileColor="black" nickname="비어있음">
+          <UserCard divWidth="54px" profileColor="black" nickname="비어있음">
             <p> </p>
           </UserCard>
         )
@@ -112,12 +140,21 @@ const Reaction = () => {
 
   useEffect(() => {
     // 소켓 on - stat이 die 가 아닐때 시간을 받는다면 stat을 wait으로 변경하고 n초뒤에 stat을 click로 바꿈
-
     socket?.on("reaction-game-round-start", (time: number) => {
-      if (stat !== "die") {
-        renderDelay.current = setTimeout(() => {
+      renderDelay.current = setTimeout(() => {
+        if (stat !== "die") {
           setStat("wait");
-        }, 1500);
+        }
+        setRound(round + 1);
+        setParticipant(() => {
+          const copy = JSON.parse(JSON.stringify(participant));
+          for (const temp of copy) {
+            temp.recentSpeed = 0;
+          }
+          return copy;
+        });
+      }, 1500);
+      if (stat !== "die") {
         timeout.current = setTimeout(() => {
           setStat("click");
           startTime.current = new Date();
@@ -126,15 +163,22 @@ const Reaction = () => {
     });
     // 소켓 on - stat이 die 가 아닐때 사용자들의 결과를 받는다면 sort후 탈락자 선별, 탈락자의 UserCard에 탈락을 표시하고 만약
     // 자신이 탈락했다면, stat을 die로 변경함
-    socket?.on("reaction-game-round-result", (result: { socketID: string; time: number }[]) => {
+    socket?.on("reaction-game-round-result", (result: { socketID: string; speed: number }[]) => {
       const maxResult = result.reduce((prev, next) => {
-        return prev.time >= next.time ? prev : next;
+        return prev.speed >= next.speed ? prev : next;
       });
       if (socket.id === maxResult.socketID) {
         setStat("die");
       }
       const copy = JSON.parse(JSON.stringify(participant));
       for (const temp of copy) {
+        if (!temp.isDied) {
+          for (const asd of result) {
+            if (temp.socketID === asd.socketID) {
+              temp.recentSpeed = asd.speed;
+            }
+          }
+        }
         if (temp.socketID === maxResult.socketID) {
           temp.isDied = true;
         }
@@ -147,14 +191,16 @@ const Reaction = () => {
       socket?.off("reaction-game-round-result");
     };
     // eslint-disable-next-line
-  }, [stat]);
+  },[participant]);
 
   return (
     <Container>
       <S.GameWrapper>
-        <S.WhiteSpace>
-          <p>라운드 표시</p>
-        </S.WhiteSpace>
+        <S.WhiteSpaceTop>
+          <S.RoundContainer>
+            <S.Round> {!round ? "준비" : `Round ${round}`}</S.Round>
+          </S.RoundContainer>
+        </S.WhiteSpaceTop>
         <S.GameMain>
           <S.PlayerLayout>{element.slice(0, 4)}</S.PlayerLayout>
           <S.GameLayout>
@@ -168,7 +214,7 @@ const Reaction = () => {
           </S.GameLayout>
           <S.PlayerLayout>{element.slice(-4)}</S.PlayerLayout>
         </S.GameMain>
-        <S.WhiteSpace />
+        <S.WhiteSpaceBottom />
       </S.GameWrapper>
     </Container>
   );
