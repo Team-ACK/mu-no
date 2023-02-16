@@ -191,7 +191,7 @@ const Reaction = () => {
       socket?.off("reaction-game-round-result");
     };
     // eslint-disable-next-line
-  },[participant]);
+  });
 
   return (
     <Container>
