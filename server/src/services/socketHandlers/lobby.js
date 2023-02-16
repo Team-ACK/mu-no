@@ -1,4 +1,4 @@
-const Room = require("../../models/room");
+const Room = require("../../models/class/room");
 
 module.exports = (io, socket, roomList, getUserList) => {
     socket.on("create-room", (done) => {
