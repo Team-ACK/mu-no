@@ -1,20 +1,20 @@
 import { create } from "zustand";
 
-type datainfo = {
+type userType = {
   admin: boolean;
   nickname: string;
   userColor: string;
   socketID: string;
 };
 
-interface Lobby {
-  userList: datainfo[];
-  setUserList: (userList: datainfo[]) => void;
+interface LobbyStoreType {
+  userList: userType[];
+  setUserList: (userList: userType[]) => void;
   headCount: string;
   setHeadCount: (headCount: string) => void;
 }
 
-const lobbyStore = create<Lobby>((set) => ({
+const lobbyStore = create<LobbyStoreType>((set) => ({
   userList: [],
   setUserList: (userList) => {
     set((_) => ({ userList }));

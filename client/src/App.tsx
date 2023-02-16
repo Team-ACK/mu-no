@@ -1,10 +1,9 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
+import { useEffect } from "react";
 import { GlobalStyle, theme } from "./styles";
 import { Home, Lobby, Reaction } from "./pages";
 import { socketStore } from "./store";
-
-import { useEffect } from "react";
 
 const App = () => {
   const { setSocket } = socketStore();

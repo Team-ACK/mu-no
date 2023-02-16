@@ -1,10 +1,9 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { socketStore, lobbyStore, userStore } from "../../../store";
 import { Button, UserCard } from "../../../components";
 import DropDown from "../../../assets/img/dropdown.svg";
-// 모든 styled component 및 import 리팩토링 필요
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -15,20 +14,16 @@ const LayoutStyle = styled.div`
   height: 100%;
   border-radius: 12px;
 `;
-const WrapperStyle = styled(LayoutStyle)`
-  /* border: 1px solid blue; */
-`;
 
 const S = {
-  MainWrapper: styled(WrapperStyle)`
+  MainWrapper: styled(LayoutStyle)`
     flex-direction: row;
     justify-content: space-between;
     border: none;
   `,
-  PlayerListWrapper: styled(WrapperStyle)`
+  PlayerListWrapper: styled(LayoutStyle)`
     flex-basis: 34%;
   `,
-
   PlayerListTop: styled(LayoutStyle)`
     flex-direction: row;
     border: 1px solid skyblue;
@@ -104,42 +99,26 @@ const S = {
       width: 7px;
     }
   `,
-
-  GameListWrapper: styled(WrapperStyle)`
+  GameListWrapper: styled(LayoutStyle)`
     flex-basis: 64.2%;
   `,
 };
 
 const MainElement = () => {
   const navigate = useNavigate();
-  const populationList: number[] = [2, 3, 4, 5, 6];
-
-  const [population, setPopulation] = useState(4);
-
-  const [element, setElement] = useState<JSX.Element[]>([]);
 
   const { socket } = socketStore();
   const { isHost, roomCode } = userStore();
   const { userList, headCount } = lobbyStore();
 
-  useEffect(() => {
-    if (socket) {
-      socket.on("reaction-selected", () => {
-        navigate(`/${roomCode}/reaction`);
-      });
-    }
-    return () => {
-      if (socket) {
-        socket.off("reaction-selected");
-      }
-    };
+  const [population, setPopulation] = useState(4);
+  const [element, setElement] = useState<JSX.Element[]>([]);
 
-    // eslint-disable-next-line
-  }, []);
+  const populationList: number[] = [2, 3, 4, 5, 6];
 
-  const optionList: JSX.Element[] = populationList.map((data, index) => {
+  const optionList: JSX.Element[] = populationList.map((data) => {
     return (
-      <option value={data} key={index}>
+      <option value={data} key={data}>
         플레이어 {data}명
       </option>
     );
@@ -156,21 +135,17 @@ const MainElement = () => {
             nickname={`${userList[i].nickname}`}
             isMe={socket?.id === userList[i].socketID}
           >
-            <p>{userList[i].admin === true ? "방장임" : "딱가리임"}</p>
+            <p>{userList[i].admin === true ? "방장임" : "유저임"}</p>
           </UserCard>
         ) : (
           <UserCard profileColor="black" nickname="비어있음">
-            <p>x</p>
+            <p> </p>
           </UserCard>
         )
       );
     }
     setElement(temp);
   };
-
-  useEffect(() => {
-    addUserLayout();
-  }, [userList]);
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setPopulation(parseInt(e.currentTarget.value, 10));
@@ -184,6 +159,22 @@ const MainElement = () => {
     }
   };
 
+  useEffect(() => {
+    socket?.on("reaction-selected", () => {
+      navigate(`/${roomCode}/reaction`);
+    });
+
+    return () => {
+      socket?.off("reaction-selected");
+    };
+    // eslint-disable-next-line
+  }, []);
+
+  useEffect(() => {
+    addUserLayout();
+    // eslint-disable-next-line
+  }, [userList]);
+
   return (
     <S.MainWrapper>
       <S.PlayerListWrapper>
@@ -191,7 +182,6 @@ const MainElement = () => {
           <S.Player>
             <p>플레이어</p>
           </S.Player>
-
           <S.PlayerCount>
             <p>
               {headCount}/{population}
@@ -209,7 +199,6 @@ const MainElement = () => {
               </S.PlayerSelectorLabel>
             </S.PlayerCountLayout>
           </S.SelectorLayout>
-
           <S.PlayerListLayout>{element}</S.PlayerListLayout>
         </S.PlayerListBottom>
       </S.PlayerListWrapper>
@@ -218,7 +207,7 @@ const MainElement = () => {
         {isHost === true ? (
           <Button onClick={gameStart}>게임 시작</Button>
         ) : (
-          <div>방장이 게임을 시작할 때 까지 대기해 주세요 :)</div>
+          <div>방장이 게임을 시작할 때 까지 기다려 주세요 :)</div>
         )}
       </S.GameListWrapper>
     </S.MainWrapper>

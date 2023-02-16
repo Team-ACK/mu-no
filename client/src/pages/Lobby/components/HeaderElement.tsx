@@ -1,8 +1,8 @@
-import styled from "styled-components";
+// import styled from "styled-components";
 
-const S = {};
+// const S = {};
 const HeaderElement = () => {
-  return <h1>헤더임</h1>;
+  return <h1 style={{ fontSize: "35px", fontWeight: "bold" }}>로비</h1>;
 };
 
 export default HeaderElement;

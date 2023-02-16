@@ -9,7 +9,6 @@ const S = {
   `,
 
   InnerContainer: styled.div`
-    // background: #ffcc58;
     width: 1200px;
     height: 800px;
     display: flex;

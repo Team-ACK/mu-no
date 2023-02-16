@@ -19,7 +19,7 @@ const LayoutStyle = styled.div`
 `;
 
 const S = {
-  Test: styled.div`
+  Wrapper: styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -36,7 +36,7 @@ const S = {
     margin: 10px 10px 5px 10px;
     flex-direction: row;
   `,
-  userImgLayout: styled(LayoutStyle)`
+  UserImgLayout: styled(LayoutStyle)`
     width: 58px;
     height: 58px;
     border-radius: 50%;
@@ -45,12 +45,12 @@ const S = {
     margin: 0px 10px;
     background-color: ${({ profileColor }: { profileColor: string | undefined }) => profileColor};
   `,
-  userNameLayout: styled(LayoutStyle)`
+  UserNameLayout: styled(LayoutStyle)`
     align-items: flex-start;
     flex: 1 1 0%;
     color: ${({ isMe }: { isMe?: boolean }) => (isMe ? "green" : "black")};
   `,
-  userAuthLayout: styled(LayoutStyle)`
+  UserAuthLayout: styled(LayoutStyle)`
     width: 50px;
     height: 50px;
     margin-right: 15px;
@@ -58,17 +58,17 @@ const S = {
 };
 
 const UserCard: React.FC<Props> = ({ children, profileColor, nickname, isMe }: Props) => (
-  <S.Test>
+  <S.Wrapper>
     <S.PlayerLayout>
-      <S.userImgLayout profileColor={profileColor}>
+      <S.UserImgLayout profileColor={profileColor}>
         <ProfileImg width="50px" height="50px" fill="white" />
-      </S.userImgLayout>
+      </S.UserImgLayout>
 
-      <S.userNameLayout isMe={isMe}>{nickname}</S.userNameLayout>
+      <S.UserNameLayout isMe={isMe}>{nickname}</S.UserNameLayout>
 
-      <S.userAuthLayout>{children}</S.userAuthLayout>
+      <S.UserAuthLayout>{children}</S.UserAuthLayout>
     </S.PlayerLayout>
-  </S.Test>
+  </S.Wrapper>
 );
 
 export default UserCard;
