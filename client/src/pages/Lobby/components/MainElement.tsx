@@ -1,6 +1,7 @@
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
+import { CopyToClipboard } from "react-copy-to-clipboard";
 import { socketStore, lobbyStore, userStore } from "../../../store";
 import { Button, UserCard } from "../../../components";
 import DropDown from "../../../assets/img/dropdown.svg";
@@ -107,6 +108,8 @@ const S = {
 const MainElement = () => {
   const navigate = useNavigate();
 
+  const location = useLocation();
+
   const { socket } = socketStore();
   const { isHost, roomCode } = userStore();
   const { userList, headCount } = lobbyStore();
@@ -115,7 +118,8 @@ const MainElement = () => {
   const [element, setElement] = useState<JSX.Element[]>([]);
 
   const populationList: number[] = [2, 3, 4, 5, 6];
-
+  // const inviteCode = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
+  const inviteCode = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
   const optionList: JSX.Element[] = populationList.map((data) => {
     return (
       <option value={data} key={data}>
@@ -131,6 +135,7 @@ const MainElement = () => {
       temp.push(
         userList[i] ? (
           <UserCard
+            divWidth="50px"
             profileColor={`${userList[i].userColor}`}
             nickname={`${userList[i].nickname}`}
             isMe={socket?.id === userList[i].socketID}
@@ -138,7 +143,7 @@ const MainElement = () => {
             <p>{userList[i].admin === true ? "방장임" : "유저임"}</p>
           </UserCard>
         ) : (
-          <UserCard profileColor="black" nickname="비어있음">
+          <UserCard divWidth="50px" profileColor="black" nickname="비어있음">
             <p> </p>
           </UserCard>
         )
@@ -156,6 +161,14 @@ const MainElement = () => {
       socket.emit("reaction-selected", {
         roomID: roomCode,
       });
+    }
+  };
+
+  const generateInviteCode = () => {
+    try {
+      alert("클립보드에 복사되었습니다.");
+    } catch (error) {
+      alert("클립보드 복사에 실패하였습니다.");
     }
   };
 
@@ -209,6 +222,9 @@ const MainElement = () => {
         ) : (
           <div>방장이 게임을 시작할 때 까지 기다려 주세요 :)</div>
         )}
+        <CopyToClipboard text={inviteCode}>
+          <Button onClick={generateInviteCode}>초대 코드 복사</Button>
+        </CopyToClipboard>
       </S.GameListWrapper>
     </S.MainWrapper>
   );
