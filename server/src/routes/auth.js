@@ -14,7 +14,7 @@ module.exports = (router) => {
             }
 
             if (!user) {
-                return res.send(info);
+                return res.status(400).send(info);
             }
 
             return req.login(user, (loginError) => {
@@ -22,7 +22,7 @@ module.exports = (router) => {
                     console.error(loginError);
                     return next(loginError);
                 }
-                return res.status(200).send("로그인 성공");
+                return res.status(200).send(info);
             });
         })(req, res, next);
     });
@@ -33,7 +33,7 @@ module.exports = (router) => {
             if (err) {
                 console.log(err);
             } else {
-                res.status(200).send("로그아웃");
+                res.status(200).send({ message: "로그아웃" });
             }
         });
     });
@@ -41,11 +41,13 @@ module.exports = (router) => {
     router.post("/checkEmail", async (req, res) => {
         const dupEmail = await User.findOne({ email: req.body.email });
         if (dupEmail) return res.status(400).send({ message: "등록된 이메일입니다" });
+        else return res.status(200).send({ message: "사용 가능한 이메일입니다" });
     });
 
     router.post("/checkNickname", async (req, res) => {
         const dupNickname = await User.findOne({ nickname: req.body.nickname });
         if (dupNickname) return res.status(400).send({ message: "등록된 닉네임입니다" });
+        else return res.status(200).send({ message: "사용 가능한 닉네임입니다" });
     });
 
     router.post("/signup", async (req, res) => {
@@ -84,7 +86,7 @@ module.exports = (router) => {
                 }
             });
 
-            res.send("success");
+            res.status(200).send("success");
         } catch (e) {
             res.status(500).send({ message: "Server Error" });
         }

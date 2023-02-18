@@ -22,7 +22,7 @@ module.exports = () => {
                         const validPassword = await bcrypt.compare(input_password, res.password); // (요청 pw, DB pw)
                         // console.log(validPassword);
                         if (validPassword) {
-                            return done(null, res);
+                            return done(null, res, { nickname: res.nickname });
                         } else {
                             return done(null, false, { message: "비밀번호 오류" });
                         }
