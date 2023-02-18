@@ -63,7 +63,9 @@ const FooterElement = () => {
 
       <S.InfoLayout>
         <S.Nav>
-          <S.NavItem>Github</S.NavItem>
+          <S.NavItem target="_blank" href="https://github.com/Team-ACK">
+            Github
+          </S.NavItem>
           <S.Hr />
           <S.NavItem>Blog</S.NavItem>
           <S.Hr />
