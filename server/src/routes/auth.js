@@ -38,13 +38,17 @@ module.exports = (router) => {
         });
     });
 
-    router.post("/signup", async (req, res) => {
-        let dupNickname = await User.findOne({ nickname: req.body.nickname });
-        let dupEmail = await User.findOne({ email: req.body.email });
-
-        if (dupNickname) return res.status(400).send({ message: "등록된 닉네임입니다" });
+    router.post("/checkEmail", async (req, res) => {
+        const dupEmail = await User.findOne({ email: req.body.email });
         if (dupEmail) return res.status(400).send({ message: "등록된 이메일입니다" });
+    });
 
+    router.post("/checkNickname", async (req, res) => {
+        const dupNickname = await User.findOne({ nickname: req.body.nickname });
+        if (dupNickname) return res.status(400).send({ message: "등록된 닉네임입니다" });
+    });
+
+    router.post("/signup", async (req, res) => {
         const salt = await bcrypt.genSalt(10);
         const hashed_password = await bcrypt.hash(req.body.password, salt);
 
