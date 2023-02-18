@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const Reaction = require("reaction");
+const Reaction = require("./reaction");
 
 const UserSchema = new Schema(
     {
@@ -20,14 +20,10 @@ const UserSchema = new Schema(
             required: true,
         },
 
-        created: {
-            type: Date,
-            default: Date.now,
-        },
-
         reactionResult: {
             type: Schema.Types.ObjectId,
             ref: "Reaction",
+            required: true,
         },
     },
     { timestamps: true }

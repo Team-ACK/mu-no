@@ -1,8 +1,9 @@
 const expressLoader = require("./express");
-//const mongooseLoader = require("./mongoose");
+const mongooseLoader = require("./mongoose");
+const passportLoader = require("../passport");
 
 module.exports = async (app) => {
-    //const mongoConnection = await mongooseLoader();
-
+    await mongooseLoader();
+    passportLoader();
     await expressLoader(app);
 };
