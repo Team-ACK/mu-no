@@ -293,7 +293,9 @@ const MainElement = ({
                 <S.NicknameSection>
                   <S.TextFieldWrapper>
                     <S.NicknameInfo> 환영합니다. {loginedUserNickname}님</S.NicknameInfo>
-                    <p style={{ marginTop: "4px" }}>방을 만들거나 초대 코드를 통해 방에 참가하세요.</p>
+                    <p style={{ marginTop: "4px", marginBottom: "6px" }}>
+                      방을 만들거나 초대 코드를 통해 방에 참가하세요.
+                    </p>
                     <S.NicknameSection>
                       <Button
                         onClick={() => {
@@ -302,7 +304,9 @@ const MainElement = ({
                       >
                         프로필 보기
                       </Button>
-                      <Button onClick={userLogout}>로그아웃</Button>
+                      <Button red="true" onClick={userLogout}>
+                        로그아웃
+                      </Button>
                     </S.NicknameSection>
                   </S.TextFieldWrapper>
                 </S.NicknameSection>
