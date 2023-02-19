@@ -5,6 +5,7 @@ module.exports = (io, socket, roomList, getUserList) => {
     };
 
     const endGame = () => {
+        roomList[roomID].setIsGaming(false);
         console.log("finished game");
     };
 
@@ -48,6 +49,7 @@ module.exports = (io, socket, roomList, getUserList) => {
         });
 
         if (allReady) {
+            roomList[roomID].setIsGaming(true);
             playGame(roomID);
         }
     });

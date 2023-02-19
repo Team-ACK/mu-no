@@ -16,13 +16,18 @@ module.exports = (io, socket, roomList, getUserList) => {
     socket.on("join-room", ({ nickname, userColor, roomID }, done) => {
         const isValidRoom = roomID in roomList;
 
-        if (!socket.admin) socket.admin = false;
-        socket.nickname = nickname;
-        socket.userColor = userColor;
-        socket.isReady = false;
-
         if (isValidRoom) {
+            const isGaming = roomList[roomID].getIsGaming();
+            if (isGaming) {
+                socket.emit("already-gaming", isGaming);
+            }
+
             if (!socket.admin) socket.join(roomID);
+
+            if (!socket.admin) socket.admin = false;
+            socket.nickname = nickname;
+            socket.userColor = userColor;
+            socket.isReady = false;
 
             const targetRoom = roomList[roomID];
             const userList = getUserList(roomID);

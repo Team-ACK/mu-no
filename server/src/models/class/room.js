@@ -7,6 +7,14 @@ class Room {
         this.gameResult = {};
     }
 
+    setIsGaming(isGaming) {
+        this.isGaming = isGaming;
+    }
+
+    getIsGaming() {
+        return this.isGaming;
+    }
+
     setUserList(userList) {
         this.userList = userList;
     }
