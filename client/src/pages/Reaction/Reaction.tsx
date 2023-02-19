@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { socketStore, userStore, lobbyStore } from "../../store";
 import { Container, UserCard } from "../../components";
@@ -54,7 +55,9 @@ type participantType = {
 };
 
 const Reaction = () => {
-  const { userList } = lobbyStore();
+  const location = useLocation();
+
+  const { userList, setUserList, setHeadCount } = lobbyStore();
 
   const addDiedProps = () => {
     const copy = JSON.parse(JSON.stringify(userList));
@@ -71,8 +74,23 @@ const Reaction = () => {
   const [speed, setSpeed] = useState<number>(0);
   const [element, setElement] = useState<JSX.Element[]>([]);
 
+  useEffect(() => {
+    const newParticipant: participantType[] = [];
+
+    const sockets: string[] = [];
+    userList.map((data) => {
+      return sockets.push(data.socketID);
+    });
+    participant.forEach((data, _) => {
+      if (sockets.includes(data.socketID)) {
+        newParticipant.push(data);
+      }
+    });
+    setParticipant(newParticipant);
+  }, [userList]);
+
   const { socket } = socketStore();
-  const { roomCode } = userStore();
+  const { nickname, roomCode } = userStore();
 
   const renderDelay = useRef<NodeJS.Timeout | null>(null);
   const timeout = useRef<NodeJS.Timeout | null>(null);
@@ -193,6 +211,22 @@ const Reaction = () => {
     // eslint-disable-next-line
   });
 
+  useEffect(() => {
+    if (!nickname) {
+      const url = "http://localhost:8080";
+      // const url = "http://muno.fun";
+      window.location.replace(url);
+    }
+
+    socket?.on("user-list", (data: any) => {
+      setUserList(data);
+      setHeadCount(data.length);
+    });
+
+    return () => {
+      socket?.off("user-list");
+    };
+  }, []);
   return (
     <Container>
       <S.GameWrapper>
