@@ -40,14 +40,22 @@ module.exports = (router) => {
 
     router.get("/checkEmail", async (req, res) => {
         const dupEmail = await User.exists({ email: req.query.email });
-        if (dupEmail) return res.status(400).send({ message: "등록된 이메일입니다", res: true });
-        else return res.status(200).send({ message: "사용 가능한 이메일입니다", res: false });
+        if (dupEmail)
+            return res.status(200).send({ message: "등록된 이메일입니다", isDuplicate: true });
+        else
+            return res
+                .status(200)
+                .send({ message: "사용 가능한 이메일입니다", isDuplicate: false });
     });
 
     router.get("/checkNickname", async (req, res) => {
         const dupNickname = await User.exists({ nickname: req.query.nickname });
-        if (dupNickname) return res.status(400).send({ message: "등록된 닉네임입니다", res: true });
-        else return res.status(200).send({ message: "사용 가능한 닉네임입니다", res: false });
+        if (dupNickname)
+            return res.status(200).send({ message: "등록된 닉네임입니다", isDuplicate: true });
+        else
+            return res
+                .status(200)
+                .send({ message: "사용 가능한 닉네임입니다", isDuplicate: false });
     });
 
     router.post("/signup", async (req, res) => {

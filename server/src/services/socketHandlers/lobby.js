@@ -22,6 +22,12 @@ module.exports = (io, socket, roomList, getUserList) => {
                 socket.emit("already-gaming", isGaming);
             }
 
+            const maxPlayers = roomList[roomID].getMaxPlayers();
+            const isFull = roomList[roomID].getUserList().length == maxPlayers;
+            if (isFull) {
+                socket.emit("already-full", isFull);
+            }
+
             if (!socket.admin) socket.join(roomID);
 
             if (!socket.admin) socket.admin = false;
@@ -36,6 +42,11 @@ module.exports = (io, socket, roomList, getUserList) => {
             io.to(roomID).emit("user-list", userList);
         }
         done(isValidRoom);
+    });
+
+    socket.on("set-max-players", ({ roomID, maxPlayers }, done) => {
+        roomList[roomID].setMaxPlayers(maxPlayers);
+        done(roomList[roomID].getMaxPlayers());
     });
 
     socket.on("disconnect", ({ roomID }, done) => {
