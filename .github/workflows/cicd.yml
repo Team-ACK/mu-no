@@ -44,4 +44,4 @@ jobs:
       - name: Docker run
         run: |
           docker stop ${{ env.NAME }} && docker rm ${{ env.NAME }} && docker rmi ${{ env.IMAGE_NAME }}:latest
-          docker run -d -p 80:8080 --name ${{ env.NAME }} --restart always ${{ env.IMAGE_NAME }}:latest
+          docker run -d -p 80:8080 --name ${{ env.NAME }} --restart always  -e DATABASEUR=${{ secrets.DB_URL }} ${{ env.IMAGE_NAME }}:latest
