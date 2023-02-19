@@ -1,6 +1,7 @@
+import axios from "axios";
 import styled from "styled-components";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import { TextField, Button, Profile } from "../../../components";
 import { userStore, socketStore } from "../../../store";
 
@@ -127,8 +128,9 @@ const MainElement = ({
   setModal: Function;
   paramRoomCode: string | undefined;
 }) => {
-  const navigate = useNavigate();
+  const { paramProfileCode } = useParams();
 
+  const navigate = useNavigate();
   const { setRoomCode, setNickname, setUserColor, setIsHost } = userStore();
   const { socket } = socketStore();
 
@@ -144,7 +146,9 @@ const MainElement = ({
   };
 
   const [tabToggle, setTabToggle] = useState<"guest" | "member">("guest");
+
   const [loginSuccess, setLoginSuccess] = useState<boolean>(false);
+  const [loginFailed, setLoginFailed] = useState<boolean>(false);
 
   const [annonNickname] = useState(generateRandNickname(1000, 9999));
 
@@ -152,6 +156,29 @@ const MainElement = ({
 
   const [inputRoomCode, setInputRoomCode] = useState("");
   const [inputUserNickname, setInputUserNickname] = useState("");
+
+  const [inputEmail, setInputEmail] = useState<string>("");
+  const [inputPassword, setInputPassword] = useState<string>("");
+
+  const [loginedUserNickname, setLoginedUserNickname] = useState<string>("");
+
+  const inputEmailHandler = (e: React.FormEvent<HTMLInputElement>) => setInputEmail(e.currentTarget.value);
+  const inputPasswordHandler = (e: React.FormEvent<HTMLInputElement>) => setInputPassword(e.currentTarget.value);
+
+  const onSubmit = () => {
+    if (inputEmail && inputPassword) {
+      axios.post("/signin", { email: inputEmail, password: inputPassword }).then((res) => {
+        if (res.data.success) {
+          setLoginFailed(false);
+          setLoginSuccess(true);
+          setLoginedUserNickname(res.data.message);
+        } else {
+          setLoginFailed(true);
+          setInputPassword("");
+        }
+      });
+    }
+  };
 
   const createRoom = () => {
     setNickname(inputUserNickname === "" ? annonNickname : inputUserNickname);
@@ -169,7 +196,22 @@ const MainElement = ({
     }
   };
 
+  useEffect(() => {
+    axios
+      .get("/user")
+      .then((res) => {
+        if (res.data.success) {
+          setLoginSuccess(true);
+          setLoginedUserNickname(res.data.nickname);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
   const participateRoom = () => {
+    // TODO: 회원 유저에 대한 조건부 처리 필요
     setNickname(inputUserNickname === "" ? annonNickname : inputUserNickname);
     setUserColor(profileColor);
     if (paramRoomCode) {
@@ -180,6 +222,20 @@ const MainElement = ({
       setRoomCode(inputRoomCode);
       navigate(`${inputRoomCode}/lobby`);
     }
+  };
+
+  const userLogout = () => {
+    axios
+      .get("/logout")
+      .then((_) => {
+        setLoginSuccess(false);
+        setLoginedUserNickname("");
+        setInputEmail("");
+        setInputPassword("");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   return (
@@ -236,11 +292,17 @@ const MainElement = ({
               {loginSuccess ? (
                 <S.NicknameSection>
                   <S.TextFieldWrapper>
-                    <S.NicknameInfo> 환영합니다. 진영님!</S.NicknameInfo>
+                    <S.NicknameInfo> 환영합니다. {loginedUserNickname}님</S.NicknameInfo>
                     <p style={{ marginTop: "4px" }}>방을 만들거나 초대 코드를 통해 방에 참가하세요.</p>
                     <S.NicknameSection>
-                      <Button>프로필 보기</Button>
-                      <Button>로그아웃</Button>
+                      <Button
+                        onClick={() => {
+                          navigate("/profile");
+                        }}
+                      >
+                        프로필 보기
+                      </Button>
+                      <Button onClick={userLogout}>로그아웃</Button>
                     </S.NicknameSection>
                   </S.TextFieldWrapper>
                 </S.NicknameSection>
@@ -248,28 +310,17 @@ const MainElement = ({
                 <S.TextFieldWrapper>
                   <S.NicknameSection>
                     <S.TextFieldWrapper>
+                      <TextField onChange={inputEmailHandler} placeholder="이메일" size="250px" value={inputEmail} />
                       <TextField
-                        onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                          console.log(e.currentTarget.value);
-                        }}
-                        placeholder="이메일"
-                        size="250px"
-                      />
-                      <TextField
-                        onChange={(e: React.FormEvent<HTMLInputElement>) => {
-                          console.log(e.currentTarget.value);
-                        }}
+                        onChange={inputPasswordHandler}
                         placeholder="비밀번호"
                         size="250px"
+                        type="password"
+                        value={inputPassword}
                       />
                     </S.TextFieldWrapper>
                     <S.TextFieldWrapper>
-                      <Button
-                        style={{ width: "105px", height: "75px", marginTop: "0px" }}
-                        onClick={() => {
-                          setLoginSuccess(true);
-                        }}
-                      >
+                      <Button style={{ width: "105px", height: "75px", marginTop: "0px" }} onClick={onSubmit}>
                         로그인
                       </Button>
                       <S.Nav>
@@ -285,7 +336,10 @@ const MainElement = ({
                       </S.Nav>
                     </S.TextFieldWrapper>
                   </S.NicknameSection>
-                  <p style={{ marginTop: "3px", color: "#ff3d3d" }}>아이디 또는 비밀번호가 일치하지 않습니다.</p>
+
+                  {loginFailed ? (
+                    <p style={{ marginTop: "3px", color: "#ff3d3d" }}>아이디 또는 비밀번호가 일치하지 않습니다.</p>
+                  ) : null}
                 </S.TextFieldWrapper>
               )}
             </S.ProfileImgLayout>
@@ -294,9 +348,20 @@ const MainElement = ({
 
         <S.SubmitLayout>
           {paramRoomCode ? (
-            <Button onClick={participateRoom} size="180px">
-              참가
-            </Button>
+            tabToggle === "member" && loginSuccess === false ? (
+              <Button
+                size="180px"
+                disabled
+                style={{ cursor: "default", backgroundColor: "#b8baff" }}
+                onClick={participateRoom}
+              >
+                참가
+              </Button>
+            ) : (
+              <Button size="180px" onClick={participateRoom}>
+                참가
+              </Button>
+            )
           ) : (
             <>
               {tabToggle === "member" && !loginSuccess ? (
