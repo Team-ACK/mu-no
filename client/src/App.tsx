@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
 import { useEffect } from "react";
 import { GlobalStyle, theme } from "./styles";
-import { Home, Lobby, Reaction } from "./pages";
+import { Home, Lobby, Reaction, Profile } from "./pages";
 import { socketStore } from "./store";
 
 const App = () => {
@@ -18,6 +18,7 @@ const App = () => {
       <GlobalStyle />
       <BrowserRouter>
         <Routes>
+          <Route path="/profile" element={<Profile />} />
           <Route path="/" element={<Home />}>
             <Route path=":paramRoomCode" element={<Home />} />
           </Route>
