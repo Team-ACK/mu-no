@@ -21,7 +21,6 @@ const NonContentStyle = styled(CommonStyle)`
   width: 100%;
   flex-basis: 15%;
   color: ${(props) => props.theme.typography.button};
-  /* border: 1px solid red; */
 `;
 const ContentStyle = styled(CommonStyle)`
   color: gray;
@@ -53,7 +52,6 @@ const S = {
   `,
 
   InnerContainer: styled(CommonStyle)`
-    /* justify-content: space-between; */
     width: 500px;
     height: 700px;
     padding: 15px 20px;
@@ -84,97 +82,152 @@ const S = {
 const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
   const [scale, setScale] = useState(Math.min(window.innerWidth / 1400, window.innerHeight / 900));
 
+  const [userNamefirstRender, setUserNameFirstRender] = useState(true);
+  const [finishCheckEmail, setFinishCheckEmail] = useState(false);
+
   const [userEmail, setUserEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [userName, setUserName] = useState("");
 
-  const [userEmailErr, setUserEmailErr] = useState(false);
   const [passwordErr, setPasswordErr] = useState(false);
   const [confirmPasswordErr, setConfirmPasswordErr] = useState(false);
+  const [userEmailErr, setUserEmailErr] = useState<0 | 1 | 2>(0);
   const [userNameErr, setUserNameErr] = useState<0 | 1 | 2>(0);
 
-  const onChangeUserEmail = (e: React.FormEvent<HTMLInputElement>) => {
-    const emailRegex =
-      /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
-    if (!e.currentTarget.value || emailRegex.test(e.currentTarget.value)) setUserEmailErr(false);
-    else setUserEmailErr(true);
+  const passwordHandler = (e: React.FormEvent<HTMLInputElement>) => setPassword(e.currentTarget.value);
+  const confirmPasswordHandler = (e: React.FormEvent<HTMLInputElement>) => setConfirmPassword(e.currentTarget.value);
+  const userNameHandler = (e: React.FormEvent<HTMLInputElement>) => {
+    setUserNameFirstRender(false);
+    setUserName(e.currentTarget.value);
+  };
+  const userEmailHandler = (e: React.FormEvent<HTMLInputElement>) => {
     setUserEmail(e.currentTarget.value);
   };
-  const onChangePassword = (e: React.FormEvent<HTMLInputElement>) => {
+
+  const validatePassword = () => {
     // const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
-    const passwordRegex = /^.{8,}$/;
-    if (!e.currentTarget.value || passwordRegex.test(e.currentTarget.value)) setPasswordErr(false);
+    const passwordRegex = /^.{8,15}$/;
+    if (!password || passwordRegex.test(password)) setPasswordErr(false);
     else setPasswordErr(true);
+  };
 
-    if (!confirmPassword || e.currentTarget.value === confirmPassword) setConfirmPasswordErr(false);
+  const validateConfirmPassword = () => {
+    if (password === confirmPassword) setConfirmPasswordErr(false);
     else setConfirmPasswordErr(true);
-    setPassword(e.currentTarget.value);
   };
-  const onChangeConfirmPassword = (e: React.FormEvent<HTMLInputElement>) => {
-    if (password === e.currentTarget.value) setConfirmPasswordErr(false);
-    else setConfirmPasswordErr(true);
-    setConfirmPassword(e.currentTarget.value);
+
+  const checkUserEmailDuplicate = async (): Promise<boolean> => {
+    const response = await axios.get(`/checkEmail?email=${userEmail}`);
+    return response.data.isDuplicate;
   };
-  // const onChangeUserName = (e: React.FormEvent<HTMLInputElement>) => {
-  //   // const nicknameRegex = /^(?=.*[a-z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣])[a-z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]$/;
-  //   // if ((!inputName || nicknameRegex.test(inputName)) && (getBytes(inputName) < 4 || getBytes(inputName) > 16)) {
-  //   //   setUserNameErr(false);
-  //   //   setUserName(e.currentTarget.value);
 
-  //   const inputName = e.currentTarget.value;
-
-  //   if (!inputName || getBytes(inputName) < 4 || getBytes(inputName) > 16) {
-  //     setUserNameErr(true);
-  //   } else {
-  //     setUserNameErr(false);
-  //     setUserName(e.currentTarget.value);
-  //   }
-  // };
-
-  // 0: 정상, 1: 길이가 맞지 않는 경우, 2: 중복된 닉네임일 경우
-
-  type CheckNickNameType = {
-    nickname: string;
+  const checkUserEmailHandler = async () => {
+    const emailRegex =
+      /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+    if (userEmail && userEmailErr !== 1 && emailRegex.test(userEmail)) {
+      const isDuplicate = await checkUserEmailDuplicate();
+      if (isDuplicate) {
+        setUserEmailErr(2);
+      } else {
+        setUserEmailErr(0);
+        setFinishCheckEmail(true);
+      }
+    }
   };
-  const onChangeUserName = (e: React.FocusEvent<HTMLInputElement>) => {
-    const inputName = e.currentTarget.value;
-    if (userNameErr !== 1) {
+
+  const validateUserEmail = () => {
+    const emailRegex =
+      /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+    if (!userEmail || emailRegex.test(userEmail)) setUserEmailErr(0);
+    else {
+      setUserEmailErr(1);
+    }
+  };
+
+  const checkUserNameDuplicate = async (): Promise<boolean> => {
+    const response = await axios.get(`/checkNickname?nickname=${userName}`);
+    return response.data.isDuplicate;
+  };
+
+  const validateUserName = async () => {
+    // const nicknameRegex = /^(?=.*[a-z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣])[a-z0-9ㄱ-ㅎ|ㅏ-ㅣ|가-힣]$/
+    if (!userName || getBytes(userName) < 4 || getBytes(userName) > 16) {
+      setUserNameErr(1);
+    } else {
+      const isDuplicate = await checkUserNameDuplicate();
+      if (isDuplicate) {
+        setUserNameErr(2);
+      } else {
+        setUserNameErr(0);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const timeid = setTimeout(() => {
+      validateUserName();
+    }, 300);
+    return () => {
+      clearTimeout(timeid);
+    };
+  }, [userName]);
+
+  useEffect(() => {
+    const timeid = setTimeout(() => {
+      validateUserEmail();
+    }, 300);
+    return () => {
+      clearTimeout(timeid);
+    };
+  }, [userEmail]);
+
+  useEffect(() => {
+    const timeid = setTimeout(() => {
+      validatePassword();
+    }, 300);
+    return () => {
+      clearTimeout(timeid);
+    };
+  }, [password]);
+
+  useEffect(() => {
+    const timeid = setTimeout(() => {
+      validateConfirmPassword();
+    }, 300);
+    return () => {
+      clearTimeout(timeid);
+    };
+  }, [confirmPassword]);
+
+  const validation = () => {
+    validateUserEmail();
+    validatePassword();
+    validateConfirmPassword();
+    validateUserName();
+
+    if (userEmailErr && userNameErr && passwordErr && confirmPasswordErr && !finishCheckEmail) {
+      return true;
+    }
+    return false;
+  };
+
+  const onSubmit = () => {
+    if (validation()) {
       axios
-        .post<CheckNickNameType>("/checkNickname", { nickname: inputName })
+        .post("/signup", { nickname: userName, email: userEmail, password })
         .then((res) => {
-          console.log((res as any).message);
-          if ((res as any).message === "사용 가능한 닉네임입니다") {
-            setUserNameErr(0);
-          } else if ((res as any).message === "등록된 닉네임입니다") {
-            setUserNameErr(2);
+          if (res.data.message === "success") {
+            setModal(!modal);
+            alert("회원가입 성공!");
           }
         })
         .catch((err) => {
-          alert((err as any).message);
+          console.log(err);
         });
-    }
-  };
-
-  const validation = () => {
-    if (!password) setPasswordErr(true);
-    if (!confirmPassword) setConfirmPasswordErr(true);
-    if (!userName) setUserNameErr(1);
-    if (!userEmail) setUserEmailErr(true);
-
-    if (password && confirmPassword && userName && userEmail) {
-      return true;
-    }
-    return false;
-  };
-
-  const onSubmit = (e: React.SyntheticEvent) => {
-    if (validation()) {
-      setModal(!modal);
-      return true;
+      return;
     }
     alert("다시하셈");
-    return false;
   };
 
   const getBytes = (nickname: string) => {
@@ -186,7 +239,6 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
       if (escape(character).length > 4) charBytes += 2;
       else charBytes += 1;
     }
-
     return charBytes;
   };
 
@@ -221,30 +273,65 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
           <S.NicknameLayout>
             <p>닉네임</p>
             <S.NicknameInput>
-              <TextField size="100%" style={{ marginLeft: "0px", height: "93%" }} onChange={onChangeUserName} />
-              {/* <Button size="150px">
-                <p style={{ fontSize: "17px" }}>중복 확인</p>
-              </Button> */}
+              <TextField
+                size="100%"
+                style={{ marginLeft: "0px", height: "93%" }}
+                onChange={userNameHandler}
+                value={userName}
+              />
             </S.NicknameInput>
-            {userNameErr && (
+            {!userNamefirstRender && userNameErr === 1 ? (
               <p style={{ color: "red", marginTop: "10px" }}>닉네임은 한글 2~8자, 영문 4~16자 이내로 입력해주세요</p>
-            )}
+            ) : !userNamefirstRender && userNameErr === 2 ? (
+              <p style={{ color: "red", marginTop: "10px" }}>중복된 닉네임 입니다</p>
+            ) : !userNamefirstRender && userNameErr === 0 ? (
+              <p style={{ color: "#54d154", marginTop: "10px" }}>사용 가능한 닉네임 입니다</p>
+            ) : null}
           </S.NicknameLayout>
 
           <S.EmailLayout>
             <p>이메일</p>
             <S.EmailInput>
-              <TextField
-                size="100%"
-                style={{ marginLeft: "0px", height: "93%" }}
-                placeholder="abcde@example.com"
-                onChange={onChangeUserEmail}
-              />
-              <Button size="150px" style={{ height: "93%" }}>
-                <p style={{ fontSize: "17px" }}>중복 확인</p>
-              </Button>
+              {finishCheckEmail ? (
+                <TextField
+                  size="100%"
+                  style={{ marginLeft: "0px", height: "93%", backgroundColor: "#ebebeb" }}
+                  placeholder="abcde@example.com"
+                  onChange={userEmailHandler}
+                  readOnly
+                  disabled
+                  value={userEmail}
+                />
+              ) : (
+                <TextField
+                  size="100%"
+                  style={{ marginLeft: "0px", height: "93%" }}
+                  placeholder="abcde@example.com"
+                  onChange={userEmailHandler}
+                  value={userEmail}
+                />
+              )}
+
+              {finishCheckEmail ? (
+                <Button
+                  size="150px"
+                  style={{ height: "93%", cursor: "default", backgroundColor: "#b8baff" }}
+                  onClick={checkUserEmailHandler}
+                  disabled
+                >
+                  <p style={{ fontSize: "17px" }}>확인 완료</p>
+                </Button>
+              ) : (
+                <Button size="150px" style={{ height: "93%" }} onClick={checkUserEmailHandler}>
+                  <p style={{ fontSize: "17px" }}>중복 확인</p>
+                </Button>
+              )}
             </S.EmailInput>
-            {userEmailErr && <p style={{ color: "red", marginTop: "10px" }}>올바르지 않은 이메일 형식 입니다</p>}
+            {userEmailErr === 1 ? (
+              <p style={{ color: "red", marginTop: "10px" }}>올바르지 않은 이메일 형식 입니다</p>
+            ) : userEmailErr === 2 ? (
+              <p style={{ color: "red", marginTop: "10px" }}>중복된 이메일 입니다</p>
+            ) : null}
           </S.EmailLayout>
           <hr />
           <S.PasswordLayout>
@@ -253,7 +340,8 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
               size="100%"
               style={{ marginLeft: "0px", height: "50%" }}
               type="password"
-              onChange={onChangePassword}
+              onChange={passwordHandler}
+              value={password}
             />
             {passwordErr && <p style={{ color: "red" }}>비밀번호는 8~15자 이내로 입력해주세요</p>}
           </S.PasswordLayout>
@@ -263,7 +351,8 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
               size="100%"
               style={{ marginLeft: "0px", height: "50%" }}
               type="password"
-              onChange={onChangeConfirmPassword}
+              onChange={confirmPasswordHandler}
+              value={confirmPassword}
             />
             {confirmPasswordErr && (
               <p style={{ color: "red", marginTop: "2px" }}> 입력한 비밀번호가 서로 일치하지 않습니다</p>
@@ -279,5 +368,4 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
     </S.Background>
   );
 };
-
 export default SignUp;
