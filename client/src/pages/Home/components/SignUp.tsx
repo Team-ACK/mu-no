@@ -209,6 +209,7 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
     if (userEmailErr && userNameErr && passwordErr && confirmPasswordErr && !finishCheckEmail) {
       return true;
     }
+    setUserNameFirstRender(false);
     return false;
   };
 
@@ -278,12 +279,15 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
                 style={{ marginLeft: "0px", height: "93%" }}
                 onChange={userNameHandler}
                 value={userName}
+                red={!userNamefirstRender && userNameErr !== 0}
               />
             </S.NicknameInput>
             {!userNamefirstRender && userNameErr === 1 ? (
-              <p style={{ color: "red", marginTop: "10px" }}>닉네임은 한글 2~8자, 영문 4~16자 이내로 입력해주세요</p>
+              <p style={{ color: "#ff3d3d", marginTop: "10px" }}>
+                닉네임은 한글 2~8자, 영문 4~16자 이내로 입력해주세요
+              </p>
             ) : !userNamefirstRender && userNameErr === 2 ? (
-              <p style={{ color: "red", marginTop: "10px" }}>중복된 닉네임 입니다</p>
+              <p style={{ color: "#ff3d3d", marginTop: "10px" }}>중복된 닉네임 입니다</p>
             ) : !userNamefirstRender && userNameErr === 0 ? (
               <p style={{ color: "#54d154", marginTop: "10px" }}>사용 가능한 닉네임 입니다</p>
             ) : null}
@@ -309,6 +313,7 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
                   placeholder="abcde@example.com"
                   onChange={userEmailHandler}
                   value={userEmail}
+                  red={userEmailErr}
                 />
               )}
 
@@ -328,9 +333,9 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
               )}
             </S.EmailInput>
             {userEmailErr === 1 ? (
-              <p style={{ color: "red", marginTop: "10px" }}>올바르지 않은 이메일 형식 입니다</p>
+              <p style={{ color: "#ff3d3d", marginTop: "10px" }}>올바르지 않은 이메일 형식 입니다</p>
             ) : userEmailErr === 2 ? (
-              <p style={{ color: "red", marginTop: "10px" }}>중복된 이메일 입니다</p>
+              <p style={{ color: "#ff3d3d", marginTop: "10px" }}>중복된 이메일 입니다</p>
             ) : null}
           </S.EmailLayout>
           <hr />
@@ -342,8 +347,9 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
               type="password"
               onChange={passwordHandler}
               value={password}
+              red={passwordErr}
             />
-            {passwordErr && <p style={{ color: "red" }}>비밀번호는 8~15자 이내로 입력해주세요</p>}
+            {passwordErr && <p style={{ color: "#ff3d3d" }}>비밀번호는 8~15자 이내로 입력해주세요</p>}
           </S.PasswordLayout>
           <S.RePasswordLayout>
             <p>비밀번호 확인</p>
@@ -353,9 +359,10 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
               type="password"
               onChange={confirmPasswordHandler}
               value={confirmPassword}
+              red={confirmPasswordErr}
             />
             {confirmPasswordErr && (
-              <p style={{ color: "red", marginTop: "2px" }}> 입력한 비밀번호가 서로 일치하지 않습니다</p>
+              <p style={{ color: "#ff3d3d", marginTop: "2px" }}> 입력한 비밀번호가 서로 일치하지 않습니다</p>
             )}
           </S.RePasswordLayout>
           <S.Bottom>
