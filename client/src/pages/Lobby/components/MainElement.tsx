@@ -117,9 +117,9 @@ const MainElement = () => {
   const [population, setPopulation] = useState(4);
   const [element, setElement] = useState<JSX.Element[]>([]);
 
-  const populationList: number[] = [2, 3, 4, 5, 6];
-  // const inviteCode = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
-  const inviteCode = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
+  const populationList: number[] = [2, 3, 4, 5, 6, 7, 8];
+  const inviteCode = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
+  // const inviteCode = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
   const optionList: JSX.Element[] = populationList.map((data) => {
     return (
       <option value={data} key={data}>
@@ -140,7 +140,7 @@ const MainElement = () => {
             nickname={`${userList[i].nickname}`}
             isMe={socket?.id === userList[i].socketID}
           >
-            <p>{userList[i].admin === true ? "방장임" : "유저임"}</p>
+            <p>{userList[i].admin === true ? "방장" : "유저"}</p>
           </UserCard>
         ) : (
           <UserCard divWidth="50px" profileColor="black" nickname="비어있음">
@@ -153,7 +153,13 @@ const MainElement = () => {
   };
 
   const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPopulation(parseInt(e.currentTarget.value, 10));
+    const max = parseInt(e.currentTarget.value, 10);
+
+    if (max < parseInt(headCount, 10)) {
+      alert("최대 인원은 현재 인원보다 적을 수 없습니다");
+      return;
+    }
+    socket?.emit("set-max-players", { roomID: roomCode, maxPlayers: max });
   };
 
   const gameStart = () => {
@@ -176,9 +182,16 @@ const MainElement = () => {
     socket?.on("reaction-selected", () => {
       navigate(`/${roomCode}/reaction`);
     });
+    socket?.on("get-max-players", ({ maxPlayers }) => {
+      setPopulation(maxPlayers);
+    });
+    socket?.emit("get-max-players", { roomID: roomCode }, (maxPlayers: number) => {
+      setPopulation(maxPlayers);
+    });
 
     return () => {
       socket?.off("reaction-selected");
+      socket?.off("get-max-players");
     };
     // eslint-disable-next-line
   }, []);
@@ -186,7 +199,7 @@ const MainElement = () => {
   useEffect(() => {
     addUserLayout();
     // eslint-disable-next-line
-  }, [userList]);
+  }, [population, userList]);
 
   return (
     <S.MainWrapper>
@@ -205,11 +218,15 @@ const MainElement = () => {
         <S.PlayerListBottom>
           <S.SelectorLayout>
             <S.PlayerCountLayout>
-              <S.PlayerSelectorLabel>
-                <S.PlayerSelector onChange={handleSelect} value={population}>
-                  {optionList}
-                </S.PlayerSelector>
-              </S.PlayerSelectorLabel>
+              {isHost ? (
+                <S.PlayerSelectorLabel>
+                  <S.PlayerSelector onChange={handleSelect} value={population}>
+                    {optionList}
+                  </S.PlayerSelector>
+                </S.PlayerSelectorLabel>
+              ) : (
+                <p>플레이어 {population}</p>
+              )}
             </S.PlayerCountLayout>
           </S.SelectorLayout>
           <S.PlayerListLayout>{element}</S.PlayerListLayout>
