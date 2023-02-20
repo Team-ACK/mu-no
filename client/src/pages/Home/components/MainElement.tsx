@@ -1,6 +1,6 @@
 import axios from "axios";
 import styled from "styled-components";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { TextField, Button, Profile } from "../../../components";
 import { userStore, socketStore } from "../../../store";
@@ -128,8 +128,6 @@ const MainElement = ({
   setModal: Function;
   paramRoomCode: string | undefined;
 }) => {
-  const { paramProfileCode } = useParams();
-
   const navigate = useNavigate();
   const { setRoomCode, setNickname, setUserColor, setIsHost } = userStore();
   const { socket } = socketStore();

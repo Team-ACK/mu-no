@@ -1,5 +1,4 @@
 import styled from "styled-components";
-import { useLocation } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import { socketStore, userStore, lobbyStore } from "../../store";
 import { Container, UserCard } from "../../components";
@@ -55,8 +54,6 @@ type participantType = {
 };
 
 const Reaction = () => {
-  const location = useLocation();
-
   const { userList, setUserList, setHeadCount } = lobbyStore();
 
   const addDiedProps = () => {
@@ -87,7 +84,7 @@ const Reaction = () => {
       }
     });
     setParticipant(newParticipant);
-  }, [userList]);
+  }, [userList]); // eslint-disable-line
 
   const { socket } = socketStore();
   const { nickname, roomCode } = userStore();
@@ -226,7 +223,8 @@ const Reaction = () => {
     return () => {
       socket?.off("user-list");
     };
-  }, []);
+  }, []); // eslint-disable-line
+
   return (
     <Container>
       <S.GameWrapper>

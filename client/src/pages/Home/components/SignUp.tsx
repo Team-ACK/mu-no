@@ -124,7 +124,7 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
 
   const checkUserEmailHandler = async () => {
     const emailRegex =
-      /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+      /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i; // eslint-disable-line
     if (userEmail && userEmailErr !== 1 && emailRegex.test(userEmail)) {
       const isDuplicate = await checkUserEmailDuplicate();
       if (isDuplicate) {
@@ -138,7 +138,7 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
 
   const validateUserEmail = () => {
     const emailRegex =
-      /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+      /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i; // eslint-disable-line
     if (!userEmail || emailRegex.test(userEmail)) setUserEmailErr(0);
     else {
       setUserEmailErr(1);
@@ -171,7 +171,7 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
     return () => {
       clearTimeout(timeid);
     };
-  }, [userName]);
+  }, [userName]); // eslint-disable-line
 
   useEffect(() => {
     const timeid = setTimeout(() => {
@@ -180,7 +180,7 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
     return () => {
       clearTimeout(timeid);
     };
-  }, [userEmail]);
+  }, [userEmail]); // eslint-disable-line
 
   useEffect(() => {
     const timeid = setTimeout(() => {
@@ -189,7 +189,7 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
     return () => {
       clearTimeout(timeid);
     };
-  }, [password]);
+  }, [password]); // eslint-disable-line
 
   useEffect(() => {
     const timeid = setTimeout(() => {
@@ -198,7 +198,7 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
     return () => {
       clearTimeout(timeid);
     };
-  }, [confirmPassword]);
+  }, [confirmPassword]); // eslint-disable-line
 
   const validation = () => {
     validateUserEmail();
