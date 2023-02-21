@@ -1,10 +1,10 @@
 module.exports = (io, socket, roomList, getUserList) => {
     const playGame = (roomID) => {
         const randomTime = Math.floor(Math.random() * 3000 + 4000);
-        io.to(roomID).emit("reaction-game-round-start", randomTime);
+        io.to(roomID).emit("reaction-game-round-start", { randomTime: randomTime });
     };
 
-    const endGame = () => {
+    const endGame = (roomID) => {
         roomList[roomID].setIsGaming(false);
         console.log("finished game");
     };
@@ -12,6 +12,7 @@ module.exports = (io, socket, roomList, getUserList) => {
     socket.on("reaction-selected", ({ roomID }) => {
         roomList[roomID].setGameTitle("reaction");
         roomList[roomID].setTargetResultCounts(getUserList(roomID).length);
+        roomList[roomID].setIsGaming(true);
         io.to(roomID).emit("reaction-selected");
     });
 
@@ -23,13 +24,14 @@ module.exports = (io, socket, roomList, getUserList) => {
 
         if (gameResult.length !== targetResultCounts) return;
 
-        io.to(roomID).emit("reaction-game-round-result", roomList[roomID].getGameResult());
+        const getGameResult = roomList[roomID].getGameResult();
+        io.to(roomID).emit("reaction-game-round-result", { getGameResult: getGameResult });
 
         console.log("게임 결과 : ", gameResult);
 
         const lastResultCounts = 2;
         if (targetResultCounts === lastResultCounts) {
-            endGame();
+            endGame(roomID);
         } else {
             roomList[roomID].setTargetResultCounts(targetResultCounts - 1);
             console.log("targetResultCounts(게임중) : ", roomList[roomID].getTargetResultCounts());
@@ -49,7 +51,6 @@ module.exports = (io, socket, roomList, getUserList) => {
         });
 
         if (allReady) {
-            roomList[roomID].setIsGaming(true);
             playGame(roomID);
         }
     });

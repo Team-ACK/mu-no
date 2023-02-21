@@ -14,7 +14,7 @@ module.exports = (router) => {
             }
 
             if (!user) {
-                return res.status(400).send(info);
+                return res.status(200).send(info);
             }
 
             return req.login(user, (loginError) => {
@@ -94,7 +94,7 @@ module.exports = (router) => {
                 }
             });
 
-            res.status(200).send("success");
+            res.status(200).send({ message: "success" });
         } catch (e) {
             res.status(500).send({ message: "Server Error" });
         }

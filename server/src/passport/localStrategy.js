@@ -17,14 +17,21 @@ module.exports = () => {
                     User.findOne({ email: input_email }, async (err, res) => {
                         if (err) return done(err);
 
-                        if (!res) return done(null, false, { message: "존재하지않는 아이디" });
+                        if (!res)
+                            return done(null, false, {
+                                success: false,
+                                message: "아이디 또는 비밀번호가 일치하지 않습니다",
+                            });
 
                         const validPassword = await bcrypt.compare(input_password, res.password); // (요청 pw, DB pw)
-                        // console.log(validPassword);
+
                         if (validPassword) {
-                            return done(null, res, { message: res.nickname });
+                            return done(null, res, { success: true, message: res.nickname });
                         } else {
-                            return done(null, false, { message: "비밀번호 오류" });
+                            return done(null, false, {
+                                success: false,
+                                message: "아이디 또는 비밀번호가 일치하지 않습니다",
+                            });
                         }
                     });
                 } catch (err) {
