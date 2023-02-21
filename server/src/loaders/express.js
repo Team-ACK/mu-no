@@ -6,6 +6,7 @@ const bodyParser = require("body-parser");
 const session = require("express-session");
 const passport = require("passport");
 const cookieParser = require("cookie-parser");
+const config = require("../config");
 
 module.exports = (app) => {
     app.use(express.static(path.join(__dirname, "../../../client/build")));
@@ -15,7 +16,7 @@ module.exports = (app) => {
 
     app.use(bodyParser.urlencoded({ extended: true }));
 
-    app.use(session({ secret: "junad", resave: true, saveUninitialized: false }));
+    app.use(session({ secret: config.sessionSecret, resave: true, saveUninitialized: false }));
     app.use(passport.initialize());
     app.use(passport.session());
 
