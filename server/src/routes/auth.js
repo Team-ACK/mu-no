@@ -59,8 +59,22 @@ module.exports = (router) => {
     });
 
     router.post("/signup", async (req, res) => {
+        const { email, password, nickname } = req.body;
+        const emailRegex =
+            /^(([^<>()\[\].,;:\s@"]+(\.[^<>()\[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i;
+
+        if (!emailRegex.test(email))
+            return res.status(409).send({ success: false, message: "Invalid email regex" });
+
+        const dupEmail = await User.exists({ email: email });
+        const dupNickname = await User.exists({ nickname: nickname });
+
+        if (dupEmail || dupNickname) {
+            return res.status(409).send({ success: false, message: "Duplcate email or nickname" });
+        }
+
         const salt = await bcrypt.genSalt(10);
-        const hashed_password = await bcrypt.hash(req.body.password, salt);
+        const hashed_password = await bcrypt.hash(password, salt);
 
         /*  나중에 게임마다 인스턴스를 만들어야 하니까 후에 js파일 만들어서 나누기  */
         const reactionInstance = new Reaction({
@@ -73,8 +87,8 @@ module.exports = (router) => {
         });
 
         const user = new User({
-            nickname: req.body.nickname,
-            email: req.body.email,
+            nickname: nickname,
+            email: email,
             password: hashed_password,
             reactionResult: reactionInstance,
         });
