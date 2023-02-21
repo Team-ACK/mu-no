@@ -19,13 +19,15 @@ module.exports = (io, socket, roomList, getUserList) => {
         if (isValidRoom) {
             const isGaming = roomList[roomID].getIsGaming();
             if (isGaming) {
-                socket.emit("already-gaming", isGaming);
+                done({ isValid: false, reason: "isGaming" });
+                return;
             }
 
             const maxPlayers = roomList[roomID].getMaxPlayers();
-            const isFull = roomList[roomID].getUserList().length == maxPlayers;
+            const isFull = getUserList(roomID).length == maxPlayers;
             if (isFull) {
-                socket.emit("already-full", isFull);
+                done({ isValid: false, reason: "isFull" });
+                return;
             }
 
             if (!socket.admin) socket.join(roomID);
@@ -40,22 +42,38 @@ module.exports = (io, socket, roomList, getUserList) => {
 
             targetRoom.setUserList(userList);
             io.to(roomID).emit("user-list", userList);
+            done({ isValid: true });
+        } else {
+            done({ isValid: false, reason: "notExist" });
         }
-        done(isValidRoom);
     });
 
-    socket.on("set-max-players", ({ roomID, maxPlayers }, done) => {
+    socket.on("set-max-players", ({ roomID, maxPlayers }) => {
         roomList[roomID].setMaxPlayers(maxPlayers);
-        done(roomList[roomID].getMaxPlayers());
+        const getMaxPlayers = roomList[roomID].getMaxPlayers();
+        io.to(roomID).emit("get-max-players", { maxPlayers: getMaxPlayers });
     });
 
-    socket.on("disconnect", ({ roomID }, done) => {
-        // TODO: room ID 넘겨 받기
+    socket.on("get-max-players", ({ roomID }, done) => {
+        const getMaxPlayers = roomList[roomID].getMaxPlayers();
+        done({ maxPlayers: getMaxPlayers });
+    });
+
+    socket.on("disconnecting", () => {
+        let roomID;
+        for (let value of io.sockets.adapter.sids.get(socket.id).keys()) {
+            if (value !== socket.id) {
+                roomID = value;
+            }
+        }
         if (roomID !== undefined) {
-            if (socket.admin) socket.admin = false;
+            if (socket.admin) {
+                socket.admin = false;
+                // io.to(roomID).clear();              #stackoverflow / 이건 방에있는 모든 소켓을 내보낸다라고 본거같은데 뭐가 맞을까
+            }
             socket.leave(roomID);
             const userList = getUserList(roomID);
-            io.to(roomID).emit("user-list", userList);
+            io.to(roomID).emit("user-list", { userList: userList });
         }
     });
 };
