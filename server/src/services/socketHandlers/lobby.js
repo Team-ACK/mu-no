@@ -61,19 +61,27 @@ module.exports = (io, socket, roomList, getUserList) => {
 
     socket.on("disconnecting", () => {
         let roomID;
+
         for (let value of io.sockets.adapter.sids.get(socket.id).keys()) {
             if (value !== socket.id) {
                 roomID = value;
             }
         }
+
         if (roomID !== undefined) {
             if (socket.admin) {
                 socket.admin = false;
-                // io.to(roomID).clear();              #stackoverflow / 이건 방에있는 모든 소켓을 내보낸다라고 본거같은데 뭐가 맞을까
+
+                io.to(roomID).emit("admin-exit");
+
+                for (let socketID of io.sockets.adapter.rooms.get(roomID)) {
+                    io.sockets.sockets.get(socketID).leave(roomID);
+                }
+            } else {
+                socket.leave(roomID);
+                const userList = getUserList(roomID);
+                io.to(roomID).emit("user-list", { userList: userList });
             }
-            socket.leave(roomID);
-            const userList = getUserList(roomID);
-            io.to(roomID).emit("user-list", { userList: userList });
         }
     });
 };
