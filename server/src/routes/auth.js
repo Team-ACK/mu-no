@@ -99,4 +99,11 @@ module.exports = (router) => {
             res.status(500).send({ message: "Server Error" });
         }
     });
+
+    router.get("/user", async (req, res) => {
+        isAuthenticated = req.isAuthenticated();
+        let nickname;
+        if (isAuthenticated) nickname = req.user.nickname;
+        res.status(200).send({ success: isAuthenticated, nickname: nickname });
+    });
 };
