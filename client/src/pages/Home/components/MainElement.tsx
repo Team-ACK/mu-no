@@ -2,7 +2,7 @@ import axios from "axios";
 import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { TextField, Button, Profile } from "../../../components";
+import { TextField, Profile, Button } from "../../../components";
 import { userStore, socketStore } from "../../../store";
 
 const LayoutStyle = styled.div`
@@ -302,7 +302,7 @@ const MainElement = ({
                       >
                         프로필 보기
                       </Button>
-                      <Button red="true" onClick={userLogout}>
+                      <Button buttonType="warning" onClick={userLogout}>
                         로그아웃
                       </Button>
                     </S.NicknameSection>
@@ -350,29 +350,18 @@ const MainElement = ({
 
         <S.SubmitLayout>
           {paramRoomCode ? (
-            tabToggle === "member" && loginSuccess === false ? (
-              <Button
-                size="180px"
-                disabled
-                style={{ cursor: "default", backgroundColor: "#b8baff" }}
-                onClick={participateRoom}
-              >
-                참가
-              </Button>
-            ) : (
-              <Button size="180px" onClick={participateRoom}>
-                참가
-              </Button>
-            )
+            <Button
+              style={{ width: "180px" }}
+              disabled={tabToggle === "member" && loginSuccess === false}
+              onClick={participateRoom}
+            >
+              참가
+            </Button>
           ) : (
             <>
-              {tabToggle === "member" && !loginSuccess ? (
-                <Button disabled style={{ cursor: "default", backgroundColor: "#b8baff" }} onClick={participateRoom}>
-                  방 만들기
-                </Button>
-              ) : (
-                <Button onClick={createRoom}>방 만들기</Button>
-              )}
+              <Button disabled={tabToggle === "member" && !loginSuccess} onClick={createRoom}>
+                방 만들기
+              </Button>
 
               <TextField
                 onChange={(e: React.FormEvent<HTMLInputElement>) => {
@@ -380,13 +369,12 @@ const MainElement = ({
                 }}
                 placeholder="코드 또는 링크 입력"
               />
-              {inputRoomCode === "" || (tabToggle === "member" && loginSuccess === false) ? (
-                <Button disabled style={{ cursor: "default", backgroundColor: "#b8baff" }} onClick={participateRoom}>
-                  참가
-                </Button>
-              ) : (
-                <Button onClick={participateRoom}>참가</Button>
-              )}
+              <Button
+                disabled={inputRoomCode === "" || (tabToggle === "member" && loginSuccess === false)}
+                onClick={participateRoom}
+              >
+                참가
+              </Button>
             </>
           )}
         </S.SubmitLayout>
