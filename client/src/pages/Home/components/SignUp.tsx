@@ -319,15 +319,14 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
 
               {finishCheckEmail ? (
                 <Button
-                  size="150px"
-                  style={{ height: "93%", cursor: "default", backgroundColor: "#b8baff" }}
+                  style={{ width: "150px", height: "93%", cursor: "default", backgroundColor: "#b8baff" }}
                   onClick={checkUserEmailHandler}
                   disabled
                 >
                   <p style={{ fontSize: "17px" }}>확인 완료</p>
                 </Button>
               ) : (
-                <Button size="150px" style={{ height: "93%" }} onClick={checkUserEmailHandler}>
+                <Button style={{ width: "150px", height: "93%" }} onClick={checkUserEmailHandler}>
                   <p style={{ fontSize: "17px" }}>중복 확인</p>
                 </Button>
               )}

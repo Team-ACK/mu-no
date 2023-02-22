@@ -155,7 +155,7 @@ const Reaction = () => {
 
   useEffect(() => {
     // 소켓 on - stat이 die 가 아닐때 시간을 받는다면 stat을 wait으로 변경하고 n초뒤에 stat을 click로 바꿈
-    socket?.on("reaction-game-round-start", (time: number) => {
+    socket?.on("reaction-game-round-start", ({ randomTime }: { randomTime: number }) => {
       renderDelay.current = setTimeout(() => {
         if (stat !== "die") {
           setStat("wait");
@@ -173,13 +173,13 @@ const Reaction = () => {
         timeout.current = setTimeout(() => {
           setStat("click");
           startTime.current = new Date();
-        }, time);
+        }, randomTime);
       }
     });
     // 소켓 on - stat이 die 가 아닐때 사용자들의 결과를 받는다면 sort후 탈락자 선별, 탈락자의 UserCard에 탈락을 표시하고 만약
     // 자신이 탈락했다면, stat을 die로 변경함
-    socket?.on("reaction-game-round-result", (result: { socketID: string; speed: number }[]) => {
-      const maxResult = result.reduce((prev, next) => {
+    socket?.on("reaction-game-round-result", (getGameResult: { socketID: string; speed: number }[]) => {
+      const maxResult = getGameResult.reduce((prev, next) => {
         return prev.speed >= next.speed ? prev : next;
       });
       if (socket.id === maxResult.socketID) {
@@ -188,7 +188,7 @@ const Reaction = () => {
       const copy = JSON.parse(JSON.stringify(participant));
       for (const temp of copy) {
         if (!temp.isDied) {
-          for (const asd of result) {
+          for (const asd of getGameResult) {
             if (temp.socketID === asd.socketID) {
               temp.recentSpeed = asd.speed;
             }

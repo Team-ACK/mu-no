@@ -1,4 +1,6 @@
-const theme = {
+import { DefaultTheme } from "styled-components";
+
+const theme: DefaultTheme = {
   palette: {
     white: "#ffffff",
     black: "#393a43",
