@@ -206,10 +206,9 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
     validateConfirmPassword();
     validateUserName();
 
-    if (userEmailErr && userNameErr && passwordErr && confirmPasswordErr && !finishCheckEmail) {
+    if (!userEmailErr && !userNameErr && !passwordErr && !confirmPasswordErr && finishCheckEmail) {
       return true;
     }
-    setUserNameFirstRender(false);
     return false;
   };
 
@@ -228,6 +227,7 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
         });
       return;
     }
+    setUserNameFirstRender(false);
     alert("다시하셈");
   };
 
