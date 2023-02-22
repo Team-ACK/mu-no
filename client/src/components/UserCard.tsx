@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { ReactComponent as ProfileImg } from "../assets/img/profile_img.svg";
+import { ReactComponent as UnknownImg } from "../assets/img/unknown.svg";
 
 type Props = {
   children: JSX.Element;
@@ -50,7 +51,8 @@ const S = {
   UserNameLayout: styled(LayoutStyle)`
     align-items: flex-start;
     flex: 1 1 0%;
-    color: ${({ isMe }: { isMe?: boolean }) => (isMe ? "green" : "black")};
+    color: ${({ isMe }: { isMe?: boolean }) => (isMe ? "#01b701" : "black")};
+    font-weight: ${({ isMe }: { isMe?: boolean }) => (isMe ? "bold" : "normal")};
   `,
   UserAuthLayout: styled(LayoutStyle)`
     flex-direction: row;
@@ -67,7 +69,11 @@ const UserCard: React.FC<Props> = ({ children, profileColor, nickname, isMe, div
   <S.Wrapper>
     <S.PlayerLayout>
       <S.UserImgLayout profileColor={profileColor}>
-        <ProfileImg width="50px" height="50px" fill="white" />
+        {profileColor !== "black" ? (
+          <ProfileImg width="50px" height="50px" fill="white" />
+        ) : (
+          <UnknownImg style={{ marginLeft: "3px" }} width="45px" height="45px" fill="white" />
+        )}
       </S.UserImgLayout>
 
       <S.UserNameLayout isMe={isMe}>{nickname}</S.UserNameLayout>

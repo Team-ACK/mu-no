@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Container } from "../../components";
 import { userStore, socketStore, lobbyStore } from "../../store";
@@ -26,20 +27,32 @@ const S = {
 };
 
 const Lobby = () => {
+  const location = useLocation();
+
   const { socket } = socketStore();
   const { nickname, userColor, roomCode } = userStore();
   const { setUserList, setHeadCount } = lobbyStore();
 
-  const [renderStatus, setRenderStatus] = useState("loading");
+  const [renderStatus, setRenderStatus] = useState<"valid" | "loading" | "isGaming" | "isFull" | "notExist">("loading");
 
   useEffect(() => {
+    const enterUrl = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
+    // const enterUrl = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
     if (!nickname) {
-      window.location.replace("/");
+      window.location.replace(enterUrl);
     }
 
-    socket?.emit("join-room", { nickname, userColor, roomID: roomCode }, (isValid: boolean) => {
-      isValid ? setRenderStatus("valid") : setRenderStatus("invalid");
-    });
+    socket?.emit(
+      "join-room",
+      { nickname, userColor, roomID: roomCode },
+      (res: { isValid: boolean; reason?: "isGaming" | "isFull" }) => {
+        if (res.isValid) {
+          setRenderStatus("valid");
+        } else if (res.reason !== undefined) {
+          setRenderStatus(res.reason);
+        }
+      }
+    );
 
     socket?.on("user-list", (data: any) => {
       setUserList(data);
@@ -63,7 +76,17 @@ const Lobby = () => {
             <MainElement />
           ) : (
             <Description>
-              <p>{renderStatus === "loading" ? "방에 입장중입니다.." : "방이 존재하지 않습니다."}</p>
+              {renderStatus === "loading" ? (
+                <p>방에 입장중입니다..</p>
+              ) : renderStatus === "isGaming" ? (
+                <p>현재 게임이 진행 중인 방입니다</p>
+              ) : renderStatus === "isFull" ? (
+                <p>방이 가득 찼습니다</p>
+              ) : renderStatus === "notExist" ? (
+                <p>방이 존재하지 않습니다</p>
+              ) : (
+                <p> </p>
+              )}
             </Description>
           )}
         </S.MainLayout>

@@ -8,15 +8,15 @@ const S = {
     border-radius: 11px;
     cursor: pointer;
     ${(props) => props.theme.typography.button};
-    background-color: #696eff;
+    background-color: ${(props: any) => (props.red === "true" ? "#ff4040" : "#696eff")};
     width: ${({ size }: { size: string | undefined }) => (typeof size === "string" ? size : "fit-content")};
     height: 46px;
     color: ${(props) => props.theme.palette.white};
     &:focus {
-      background-color: #4d53fd;
+      background-color: ${(props: any) => (props.red === "true" ? "#ff1d1d" : "#4d53fd")};
     }
     &:hover {
-      background-color: #4d53fd;
+      background-color: ${(props: any) => (props.red === "true" ? "#ff1d1d" : "#4d53fd")};
     }
   `,
 };
