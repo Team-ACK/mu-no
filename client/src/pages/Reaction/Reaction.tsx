@@ -178,28 +178,31 @@ const Reaction = () => {
     });
     // 소켓 on - stat이 die 가 아닐때 사용자들의 결과를 받는다면 sort후 탈락자 선별, 탈락자의 UserCard에 탈락을 표시하고 만약
     // 자신이 탈락했다면, stat을 die로 변경함
-    socket?.on("reaction-game-round-result", (getGameResult: { socketID: string; speed: number }[]) => {
-      const maxResult = getGameResult.reduce((prev, next) => {
-        return prev.speed >= next.speed ? prev : next;
-      });
-      if (socket.id === maxResult.socketID) {
-        setStat("die");
-      }
-      const copy = JSON.parse(JSON.stringify(participant));
-      for (const temp of copy) {
-        if (!temp.isDied) {
-          for (const asd of getGameResult) {
-            if (temp.socketID === asd.socketID) {
-              temp.recentSpeed = asd.speed;
+    socket?.on(
+      "reaction-game-round-result",
+      ({ getGameResult }: { getGameResult: { socketID: string; speed: number }[] }) => {
+        const maxResult = getGameResult.reduce((prev, next) => {
+          return prev.speed >= next.speed ? prev : next;
+        });
+        if (socket.id === maxResult.socketID) {
+          setStat("die");
+        }
+        const copy = JSON.parse(JSON.stringify(participant));
+        for (const temp of copy) {
+          if (!temp.isDied) {
+            for (const asd of getGameResult) {
+              if (temp.socketID === asd.socketID) {
+                temp.recentSpeed = asd.speed;
+              }
             }
           }
+          if (temp.socketID === maxResult.socketID) {
+            temp.isDied = true;
+          }
         }
-        if (temp.socketID === maxResult.socketID) {
-          temp.isDied = true;
-        }
+        setParticipant(copy);
       }
-      setParticipant(copy);
-    });
+    );
 
     return () => {
       socket?.off("reaction-game-round-start");
