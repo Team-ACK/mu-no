@@ -13,6 +13,9 @@ const S = {
     ${(props) => props.theme.typography.input};
     margin: 15px 0;
   `,
+  Button: styled(Button)`
+    width: 220px;
+  `,
 };
 
 const Description = ({ children }: { children: JSX.Element }) => {
@@ -32,14 +35,13 @@ const Description = ({ children }: { children: JSX.Element }) => {
     <S.DescriptionWrapper>
       <S.Info>{children}</S.Info>
       {render ? (
-        <Button
+        <S.Button
           onClick={() => {
             window.location.replace("/");
           }}
-          size="220px"
         >
           홈 화면으로 돌아가기
-        </Button>
+        </S.Button>
       ) : null}
     </S.DescriptionWrapper>
   );

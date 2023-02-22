@@ -36,8 +36,8 @@ const Lobby = () => {
   const [renderStatus, setRenderStatus] = useState<"valid" | "loading" | "isGaming" | "isFull" | "notExist">("loading");
 
   useEffect(() => {
-    const enterUrl = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
-    // const enterUrl = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
+    // const enterUrl = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
+    const enterUrl = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
     if (!nickname) {
       window.location.replace(enterUrl);
     }
@@ -54,9 +54,9 @@ const Lobby = () => {
       }
     );
 
-    socket?.on("user-list", (data: any) => {
-      setUserList(data);
-      setHeadCount(data.length);
+    socket?.on("user-list", ({ userList }: { userList: any }) => {
+      setUserList(userList);
+      setHeadCount(userList.length);
     });
 
     return () => {
