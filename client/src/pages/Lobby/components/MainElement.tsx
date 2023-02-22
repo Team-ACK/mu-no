@@ -185,7 +185,7 @@ const MainElement = () => {
     socket?.on("get-max-players", ({ maxPlayers }) => {
       setPopulation(maxPlayers);
     });
-    socket?.emit("get-max-players", { roomID: roomCode }, (maxPlayers: number) => {
+    socket?.emit("get-max-players", { roomID: roomCode }, ({ maxPlayers }: { maxPlayers: number }) => {
       setPopulation(maxPlayers);
     });
 
