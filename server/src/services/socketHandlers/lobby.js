@@ -75,9 +75,11 @@ module.exports = (io, socket, roomList, getUserList) => {
                 io.to(roomID).emit("admin-exit");
 
                 for (let socketID of io.sockets.adapter.rooms.get(roomID)) {
+                    roomList[roomID].removeUser(socketID);
                     io.sockets.sockets.get(socketID).leave(roomID);
                 }
             } else {
+                roomList[roomID].removeUser(socket.id);
                 socket.leave(roomID);
                 const userList = getUserList(roomID);
                 io.to(roomID).emit("user-list", { userList: userList });
