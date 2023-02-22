@@ -41,7 +41,7 @@ module.exports = (io, socket, roomList, getUserList) => {
             const userList = getUserList(roomID);
 
             targetRoom.setUserList(userList);
-            io.to(roomID).emit("user-list", userList);
+            io.to(roomID).emit("user-list", { userList: userList });
             done({ isValid: true });
         } else {
             done({ isValid: false, reason: "notExist" });
