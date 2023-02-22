@@ -1,10 +1,27 @@
 class Room {
-    constructor(userList, gameTitle = "undefined", isGaming = false) {
+    constructor(userList, maxPlayers = 4, gameTitle = "undefined", isGaming = false) {
         this.userList = userList; // Array
+        this.maxPlayers = maxPlayers; // Number
         this.gameTitle = gameTitle; // String
         this.isGaming = isGaming; // Boolean
         this.targetResultCounts = this.userList.length;
         this.gameResult = {};
+    }
+
+    setMaxPlayers(maxPlayers) {
+        this.maxPlayers = maxPlayers;
+    }
+
+    getMaxPlayers() {
+        return this.maxPlayers;
+    }
+
+    setIsGaming(isGaming) {
+        this.isGaming = isGaming;
+    }
+
+    getIsGaming() {
+        return this.isGaming;
     }
 
     setUserList(userList) {
@@ -41,6 +58,11 @@ class Room {
 
     getGameResult() {
         return this.gameResult[this.gameTitle];
+    }
+
+    removeUser(socketID) {
+        const idx = this.userList.indexOf(socketID);
+        if (idx > -1) this.userList.splice(idx, 1);
     }
 }
 module.exports = Room;
