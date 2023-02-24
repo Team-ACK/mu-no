@@ -23,6 +23,7 @@ const S = {
     border: none;
     margin-top: 15px;
     flex-basis: 82.2%;
+    height: 82.2%;
   `,
 };
 

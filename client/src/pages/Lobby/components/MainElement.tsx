@@ -12,7 +12,6 @@ const LayoutStyle = styled.div`
   align-items: center;
   flex-direction: column;
   width: 100%;
-  height: 100%;
   border-radius: 12px;
 `;
 
@@ -21,9 +20,11 @@ const S = {
     flex-direction: row;
     justify-content: space-between;
     border: none;
+    height: 100%;
   `,
   PlayerListWrapper: styled(LayoutStyle)`
     flex-basis: 34%;
+    height: 100%;
   `,
   PlayerListTop: styled(LayoutStyle)`
     flex-direction: row;
@@ -44,6 +45,7 @@ const S = {
   PlayerListBottom: styled(LayoutStyle)`
     border: 1px solid skyblue;
     flex-basis: 90.7%;
+    height: 90.7%;
   `,
 
   SelectorLayout: styled(LayoutStyle)`
