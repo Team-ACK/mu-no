@@ -153,7 +153,7 @@ module.exports = (router) => {
                         <div style="margin: 0.2rem; text-align:center"><br>
                             <a
                                 style="background-color: #696eff; border-radius: 3px; padding: 0.5rem; color: #fff; text-decoration: none"
-                                href='http://muno.fun/password/reset${code}'>비밀번호 재설정</a>                                
+                                href='http://muno.fun/password/reset/${code}'>비밀번호 재설정</a>                                
                         </div>
                         <br><br><br>
                         <hr><br>
