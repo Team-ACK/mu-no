@@ -118,8 +118,8 @@ const MainElement = () => {
   const [element, setElement] = useState<JSX.Element[]>([]);
 
   const populationList: number[] = [2, 3, 4, 5, 6, 7, 8];
-  const inviteCode = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
-  // const inviteCode = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
+  // const inviteCode = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
+  const inviteCode = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
   const optionList: JSX.Element[] = populationList.map((data) => {
     return (
       <option value={data} key={data}>
