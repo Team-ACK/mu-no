@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { TextField, Profile, Button } from "../../../components";
-import { userStore, socketStore } from "../../../store";
+import { userStore, socketStore, modalHandleStore } from "../../../store";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -68,9 +68,10 @@ const S = {
     ${(props) => props.theme.typography.information};
     width: 100%;
     height: 100%;
-    background-color: ${({ tabToggle }: { tabToggle: "guest" | "member" }) => (tabToggle === "guest" ? "#fafafa" : "")};
+    background-color: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
+      tabToggle === "member" ? "#fafafa" : ""};
     box-shadow: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
-      tabToggle === "guest" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
+      tabToggle === "member" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 12px 0 0 0;
   `,
@@ -80,10 +81,9 @@ const S = {
     ${(props) => props.theme.typography.information};
     width: 100%;
     height: 100%;
-    background-color: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
-      tabToggle === "member" ? "#fafafa" : ""};
+    background-color: ${({ tabToggle }: { tabToggle: "guest" | "member" }) => (tabToggle === "guest" ? "#fafafa" : "")};
     box-shadow: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
-      tabToggle === "member" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
+      tabToggle === "guest" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 0 12px 0 0;
   `,
@@ -119,18 +119,11 @@ const S = {
   `,
 };
 
-const MainElement = ({
-  modal,
-  setModal,
-  paramRoomCode,
-}: {
-  modal: boolean;
-  setModal: Function;
-  paramRoomCode: string | undefined;
-}) => {
+const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) => {
   const navigate = useNavigate();
   const { setRoomCode, setNickname, setUserColor, setIsHost } = userStore();
   const { socket } = socketStore();
+  const { setModal } = modalHandleStore();
 
   const generateRandNickname = (min: number, max: number): string => {
     return `익명${(Math.random() * (max - min) + min).toFixed()}`;
@@ -333,13 +326,19 @@ const MainElement = ({
                       <S.Nav>
                         <S.NavItem
                           onClick={() => {
-                            setModal(!modal);
+                            setModal("SignUp");
                           }}
                         >
                           회원가입
                         </S.NavItem>
                         <S.Hr />
-                        <S.NavItem>비번찾기</S.NavItem>
+                        <S.NavItem
+                          onClick={() => {
+                            setModal("FindPassword");
+                          }}
+                        >
+                          비번찾기
+                        </S.NavItem>
                       </S.Nav>
                     </S.TextFieldWrapper>
                   </S.NicknameSection>
