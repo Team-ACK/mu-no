@@ -275,11 +275,10 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
             <p>닉네임</p>
             <S.NicknameInput>
               <TextField
-                size="100%"
-                style={{ marginLeft: "0px", height: "93%" }}
+                style={{ width: "100%", height: "93%", marginLeft: "0px" }}
                 onChange={userNameHandler}
                 value={userName}
-                red={!userNamefirstRender && userNameErr !== 0}
+                fieldType={!userNamefirstRender && userNameErr !== 0 ? "warning" : "primary"}
               />
             </S.NicknameInput>
             {!userNamefirstRender && userNameErr === 1 ? (
@@ -296,40 +295,21 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
           <S.EmailLayout>
             <p>이메일</p>
             <S.EmailInput>
-              {finishCheckEmail ? (
-                <TextField
-                  size="100%"
-                  style={{ marginLeft: "0px", height: "93%", backgroundColor: "#ebebeb" }}
-                  placeholder="abcde@example.com"
-                  onChange={userEmailHandler}
-                  readOnly
-                  disabled
-                  value={userEmail}
-                />
-              ) : (
-                <TextField
-                  size="100%"
-                  style={{ marginLeft: "0px", height: "93%" }}
-                  placeholder="abcde@example.com"
-                  onChange={userEmailHandler}
-                  value={userEmail}
-                  red={userEmailErr}
-                />
-              )}
-
-              {finishCheckEmail ? (
-                <Button
-                  style={{ width: "150px", height: "93%", cursor: "default", backgroundColor: "#b8baff" }}
-                  onClick={checkUserEmailHandler}
-                  disabled
-                >
-                  <p style={{ fontSize: "17px" }}>확인 완료</p>
-                </Button>
-              ) : (
-                <Button style={{ width: "150px", height: "93%" }} onClick={checkUserEmailHandler}>
-                  <p style={{ fontSize: "17px" }}>중복 확인</p>
-                </Button>
-              )}
+              <TextField
+                style={{ width: "100%", height: "93%", marginLeft: "0px" }}
+                placeholder="abcde@example.com"
+                onChange={userEmailHandler}
+                disabled={finishCheckEmail}
+                value={userEmail}
+                fieldType={userEmailErr ? "warning" : "primary"}
+              />
+              <Button
+                style={{ width: "150px", height: "93%" }}
+                onClick={checkUserEmailHandler}
+                disabled={finishCheckEmail}
+              >
+                <p style={{ fontSize: "17px" }}>{finishCheckEmail ? "확인 완료" : "중복확인"}</p>
+              </Button>
             </S.EmailInput>
             {userEmailErr === 1 ? (
               <p style={{ color: "#ff3d3d", marginTop: "10px" }}>올바르지 않은 이메일 형식 입니다</p>
@@ -341,24 +321,22 @@ const SignUp: React.FC<Props> = ({ modal, setModal }: Props) => {
           <S.PasswordLayout>
             <p>비밀번호</p>
             <TextField
-              size="100%"
-              style={{ marginLeft: "0px", height: "50%" }}
+              style={{ height: "50%", width: "100%", marginLeft: "0px" }}
               type="password"
               onChange={passwordHandler}
               value={password}
-              red={passwordErr}
+              fieldType={passwordErr ? "warning" : "primary"}
             />
             {passwordErr && <p style={{ color: "#ff3d3d" }}>비밀번호는 8~15자 이내로 입력해주세요</p>}
           </S.PasswordLayout>
           <S.RePasswordLayout>
             <p>비밀번호 확인</p>
             <TextField
-              size="100%"
-              style={{ marginLeft: "0px", height: "50%" }}
+              style={{ height: "50%", width: "100%", marginLeft: "0px" }}
               type="password"
               onChange={confirmPasswordHandler}
               value={confirmPassword}
-              red={confirmPasswordErr}
+              fieldType={confirmPasswordErr ? "warning" : "primary"}
             />
             {confirmPasswordErr && (
               <p style={{ color: "#ff3d3d", marginTop: "2px" }}> 입력한 비밀번호가 서로 일치하지 않습니다</p>

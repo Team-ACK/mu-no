@@ -269,11 +269,11 @@ const MainElement = ({
                   <S.NicknameInfo>사용할 닉네임 입력</S.NicknameInfo>
 
                   <TextField
+                    style={{ width: "250px" }}
                     onChange={(e: React.FormEvent<HTMLInputElement>) => {
                       setInputUserNickname(e.currentTarget.value);
                     }}
                     placeholder={annonNickname}
-                    size="250px"
                   />
                 </S.TextFieldWrapper>
               </S.NicknameSection>
@@ -312,11 +312,16 @@ const MainElement = ({
                 <S.TextFieldWrapper>
                   <S.NicknameSection>
                     <S.TextFieldWrapper>
-                      <TextField onChange={inputEmailHandler} placeholder="이메일" size="250px" value={inputEmail} />
                       <TextField
+                        style={{ width: "250px" }}
+                        onChange={inputEmailHandler}
+                        placeholder="이메일"
+                        value={inputEmail}
+                      />
+                      <TextField
+                        style={{ width: "250px" }}
                         onChange={inputPasswordHandler}
                         placeholder="비밀번호"
-                        size="250px"
                         type="password"
                         value={inputPassword}
                       />
@@ -364,6 +369,7 @@ const MainElement = ({
               </Button>
 
               <TextField
+                style={{ width: "auto" }}
                 onChange={(e: React.FormEvent<HTMLInputElement>) => {
                   setInputRoomCode(e.currentTarget.value);
                 }}
