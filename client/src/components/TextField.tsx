@@ -1,17 +1,45 @@
 import styled from "styled-components";
 
+interface StyledTextFieldType {
+  disabled: boolean;
+  fieldType: "primary" | "warning";
+  type: string | undefined;
+}
+
+interface TextFieldPropsType {
+  disabled?: boolean;
+  type?: string;
+  fieldType?: "primary" | "warning";
+  placeholder?: string;
+  onChange: (e: React.FormEvent<HTMLInputElement>) => void;
+  value?: string;
+  style?: React.CSSProperties;
+}
+
+const textFieldPalette = {
+  isDisabled: (disabled: boolean) => (disabled ? "#efefef" : "transparent"),
+  primary: {
+    borderColor: "1px solid rgb(0, 0, 0, 0.2)",
+    focus: "1px solid #808088",
+  },
+  warning: {
+    borderColor: "1.5px solid #ff3d3d",
+    focus: "1.5px solid #ff3333",
+  },
+};
+
 const S = {
-  Field: styled.input`
-    ${(props) => props.theme.typography.caption};
-    border: ${(props: any) => (props.red ? "1.5px solid #ff3d3d" : "1px solid rgb(0, 0, 0, 0.2)")};
+  Field: styled.input<StyledTextFieldType>`
+    ${({ theme }) => theme.typography.caption};
+    border: ${({ fieldType }) => textFieldPalette[fieldType].borderColor};
+    background-color: ${({ disabled }) => textFieldPalette.isDisabled(disabled)};
     border-radius: 11px;
-    width: ${({ size }) => size};
     height: 46px;
     margin: 7px;
     padding: 5px 10px;
     :focus {
       outline: none;
-      border: ${(props: any) => (props.red ? "1.5px solid #ff3333" : "1px solid #808088")};
+      border: ${({ fieldType }) => textFieldPalette[fieldType].focus};
     }
     ::placeholder {
       color: #bdbdbd;
@@ -19,6 +47,24 @@ const S = {
   `,
 };
 
-const TextField: React.FC<any> = (props) => <S.Field {...props} />;
+const TextField = ({
+  disabled = false,
+  type,
+  fieldType = "primary",
+  placeholder,
+  onChange,
+  value,
+  style,
+}: TextFieldPropsType) => (
+  <S.Field
+    disabled={disabled}
+    type={type}
+    fieldType={fieldType}
+    placeholder={placeholder}
+    onChange={onChange}
+    value={value}
+    style={style}
+  />
+);
 
 export default TextField;

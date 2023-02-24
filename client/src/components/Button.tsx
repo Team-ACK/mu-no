@@ -35,12 +35,14 @@ const S = {
     background-color: ${({ buttonType, disabled }) => buttonPalette[buttonType].disabledColor(disabled)};
     width: fit-content;
     height: 46px;
-    color: ${(props) => props.theme.palette.white};
+    color: ${({ theme }) => theme.palette.white};
     &:focus {
-      background-color: ${({ buttonType }) => buttonPalette[buttonType].hover};
+      background-color: ${({ buttonType, disabled }) =>
+        disabled ? buttonPalette[buttonType].disabledColor(true) : buttonPalette[buttonType].hover};
     }
     &:hover {
-      background-color: ${({ buttonType }) => buttonPalette[buttonType].hover};
+      background-color: ${({ buttonType, disabled }) =>
+        disabled ? buttonPalette[buttonType].disabledColor(true) : buttonPalette[buttonType].hover};
     }
   `,
 };
