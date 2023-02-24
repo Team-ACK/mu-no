@@ -1,3 +1,5 @@
+const ReactionData = require("../../models/class/reactionData");
+
 module.exports = (io, socket, roomList, getUserList) => {
     const playGame = (roomID) => {
         const randomTime = Math.floor(Math.random() * 3000 + 4000);
@@ -10,21 +12,23 @@ module.exports = (io, socket, roomList, getUserList) => {
     };
 
     socket.on("reaction-selected", ({ roomID }) => {
-        roomList[roomID].setGameTitle("reaction");
-        roomList[roomID].setTargetResultCounts(getUserList(roomID).length);
-        roomList[roomID].setIsGaming(true);
+        const room = roomList[roomID];
+        const userLength = getUserList(roomID).length;
+        room.setIsGaming(true);
+        room.gameData = new ReactionData("reaction", userLength);
         io.to(roomID).emit("reaction-selected");
     });
 
     socket.on("reaction-game-user-result", ({ roomID, speed }) => {
-        const targetResultCounts = roomList[roomID].getTargetResultCounts();
-        roomList[roomID].setGameResult({ socketID: socket.id, speed: speed });
+        const reactionData = roomList[roomID].gameData;
+        const targetResultCounts = reactionData.getTargetResultCounts();
+        reactionData.setGameResult({ socketID: socket.id, speed: speed });
 
-        const gameResult = roomList[roomID].getGameResult();
+        const gameResult = reactionData.getGameResult();
 
         if (gameResult.length !== targetResultCounts) return;
 
-        const getGameResult = roomList[roomID].getGameResult();
+        const getGameResult = reactionData.getGameResult();
         io.to(roomID).emit("reaction-game-round-result", { getGameResult: getGameResult });
 
         console.log("게임 결과 : ", gameResult);
@@ -33,9 +37,9 @@ module.exports = (io, socket, roomList, getUserList) => {
         if (targetResultCounts === lastResultCounts) {
             endGame(roomID);
         } else {
-            roomList[roomID].setTargetResultCounts(targetResultCounts - 1);
-            console.log("targetResultCounts(게임중) : ", roomList[roomID].getTargetResultCounts());
-            roomList[roomID].setEmptyResult();
+            reactionData.setTargetResultCounts(targetResultCounts - 1);
+            console.log("targetResultCounts(게임중) : ", reactionData.getTargetResultCounts());
+            reactionData.setEmptyResult();
             playGame(roomID);
         }
     });

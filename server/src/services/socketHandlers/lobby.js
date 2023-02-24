@@ -15,7 +15,7 @@ module.exports = (io, socket, roomList, getUserList) => {
 
     socket.on("join-room", ({ nickname, userColor, roomID }, done) => {
         const isValidRoom = roomID in roomList;
-
+        console.log(roomID);
         if (isValidRoom) {
             const isGaming = roomList[roomID].getIsGaming();
             if (isGaming) {
@@ -75,11 +75,11 @@ module.exports = (io, socket, roomList, getUserList) => {
                 io.to(roomID).emit("admin-exit");
 
                 for (let socketID of io.sockets.adapter.rooms.get(roomID)) {
-                    roomList[roomID].removeUser(socketID);
+                    roomList[roomID].removeExitUser(socketID);
                     io.sockets.sockets.get(socketID).leave(roomID);
                 }
             } else {
-                roomList[roomID].removeUser(socket.id);
+                roomList[roomID].removeExitUser(socket.id);
                 socket.leave(roomID);
                 const userList = getUserList(roomID);
                 io.to(roomID).emit("user-list", { userList: userList });
