@@ -114,7 +114,7 @@ const MainElement = () => {
   const { isHost, roomCode } = userStore();
   const { userList, headCount } = lobbyStore();
 
-  const [population, setPopulation] = useState(4);
+  const [population, setPopulation] = useState(8);
   const [element, setElement] = useState<JSX.Element[]>([]);
 
   const populationList: number[] = [2, 3, 4, 5, 6, 7, 8];

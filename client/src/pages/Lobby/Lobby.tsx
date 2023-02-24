@@ -72,7 +72,8 @@ const Lobby = () => {
           <HeaderElement />
         </S.HeaderLayout>
         <S.MainLayout>
-          {renderStatus === "valid" ? (
+          <MainElement />
+          {/* {renderStatus === "valid" ? (
             <MainElement />
           ) : (
             <Description>
@@ -88,7 +89,7 @@ const Lobby = () => {
                 <p> </p>
               )}
             </Description>
-          )}
+          )} */}
         </S.MainLayout>
       </>
     </Container>
