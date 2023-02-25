@@ -243,6 +243,13 @@ const Reaction = () => {
               <ReactionButton stat={stat} onClick={sendReady} />
             ) : stat === "click" ? (
               <ReactionButton stat={stat} onClick={sendSpeed} />
+            ) : stat === "wait" ? (
+              <ReactionButton
+                stat={stat}
+                onClick={() => {
+                  alert("너무 빨리 눌렀어요.");
+                }}
+              />
             ) : (
               <ReactionButton disabled stat={stat} speed={speed} />
             )}
