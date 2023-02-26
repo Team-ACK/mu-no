@@ -4,7 +4,7 @@ const reactionHandler = require("./reaction");
 module.exports = (io) => {
     const roomList = {};
 
-    const getUserList = (roomID) => {
+    const getUsersInfo = (roomID) => {
         const room = io.sockets.adapter.rooms.get(roomID);
         const users = [];
 
@@ -28,7 +28,7 @@ module.exports = (io) => {
     };
 
     io.on("connection", (socket) => {
-        lobbyHandler(io, socket, roomList, getUserList);
-        reactionHandler(io, socket, roomList, getUserList);
+        lobbyHandler(io, socket, roomList, getUsersInfo);
+        reactionHandler(io, socket, roomList, getUsersInfo);
     });
 };

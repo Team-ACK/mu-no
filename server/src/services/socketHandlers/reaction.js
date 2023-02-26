@@ -1,6 +1,6 @@
 const ReactionData = require("../../models/class/reactionData");
 
-module.exports = (io, socket, roomList, getUserList) => {
+module.exports = (io, socket, roomList, getUsersInfo) => {
     const playGame = (roomID) => {
         const randomTime = Math.floor(Math.random() * 3000 + 4000);
         io.to(roomID).emit("reaction-game-round-start", { randomTime: randomTime });
@@ -13,7 +13,7 @@ module.exports = (io, socket, roomList, getUserList) => {
 
     socket.on("reaction-selected", ({ roomID }) => {
         const room = roomList[roomID];
-        const userLength = getUserList(roomID).length;
+        const userLength = room.getUserList().length;
         room.setIsGaming(true);
         room.gameData = new ReactionData("reaction", userLength);
         io.to(roomID).emit("reaction-selected");
@@ -46,7 +46,7 @@ module.exports = (io, socket, roomList, getUserList) => {
 
     socket.on("reaction-game-ready", ({ roomID }) => {
         socket.isReady = !socket.isReady;
-        const userList = getUserList(roomID);
+        const userList = getUsersInfo(roomID);
         let allReady = true;
         userList.forEach((user) => {
             if (!user.isReady) {
