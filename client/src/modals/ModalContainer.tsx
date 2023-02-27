@@ -5,14 +5,15 @@ import { modalHandleStore } from "../store";
 import { SignUp } from "./SignUp";
 import { FindPassword } from "./FindPassword";
 import { ResetPassword } from "./ResetPassword";
+import { HostDisconnected } from "./HostDisconnected";
 
 const boxFade = (nowScale: number) => keyframes`
   0% {
-    opacity: 0;
+     opacity: 0;
     transform: translateY(400px) scale(${0.75 * nowScale});
   }
   75% {
-    opacity: 1;
+    opacity: 1; 
     transform: translateY(-16px) scale(${nowScale});
   }
   100% {
@@ -71,7 +72,11 @@ const ModalContainer = () => {
   useEffect(() => {
     const escKeyModalClose = (e: KeyboardEvent) => {
       if (e.keyCode === 27) {
-        removeModal();
+        if (modal === "ResetPassword" || modal === "HostDisconnected") {
+          window.location.replace("/");
+        } else {
+          removeModal();
+        }
       }
     };
     window.addEventListener("keydown", escKeyModalClose);
@@ -83,10 +88,6 @@ const ModalContainer = () => {
     // eslint-disable-next-line
   }, []);
 
-  // const didMount = useRef(0);
-  // useEffect(() => {
-  //   didMount.current += 1;
-  // }, [scale]);
   // TODO: size 변경시 애니메이션 재실행 되는 상황 해결
 
   return (
@@ -99,7 +100,11 @@ const ModalContainer = () => {
               height="25px"
               style={{ cursor: "pointer" }}
               onClick={() => {
-                removeModal();
+                if (modal === "ResetPassword" || modal === "HostDisconnected") {
+                  window.location.replace("/");
+                } else {
+                  removeModal();
+                }
               }}
             />
           </S.CloseLayout>
@@ -109,6 +114,8 @@ const ModalContainer = () => {
             <FindPassword />
           ) : modal === "ResetPassword" ? (
             <ResetPassword />
+          ) : modal === "HostDisconnected" ? (
+            <HostDisconnected />
           ) : null}
         </S.InnerContainer>
       </S.Wrapper>

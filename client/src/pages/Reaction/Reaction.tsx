@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
-import { socketStore, userStore, lobbyStore } from "../../store";
+import { socketStore, userStore, lobbyStore, modalHandleStore } from "../../store";
 import { Container, UserCard } from "../../components";
 import { ReactionButton } from "./components";
 
@@ -55,6 +55,7 @@ type participantType = {
 
 const Reaction = () => {
   const { userList, setUserList, setHeadCount } = lobbyStore();
+  const { setModal } = modalHandleStore();
 
   const addDiedProps = () => {
     const copy = JSON.parse(JSON.stringify(userList));
@@ -204,9 +205,14 @@ const Reaction = () => {
       }
     );
 
+    socket?.on("admin-exit", () => {
+      setModal("HostDisconnected");
+    });
+
     return () => {
       socket?.off("reaction-game-round-start");
       socket?.off("reaction-game-round-result");
+      socket?.off("admin-exit");
     };
     // eslint-disable-next-line
   });
@@ -218,9 +224,9 @@ const Reaction = () => {
       window.location.replace(url);
     }
 
-    socket?.on("user-list", (data: any) => {
-      setUserList(data);
-      setHeadCount(data.length);
+    socket?.on("user-list", (data: { userList: any }) => {
+      setUserList(data.userList);
+      setHeadCount(data.userList.length);
     });
 
     return () => {
