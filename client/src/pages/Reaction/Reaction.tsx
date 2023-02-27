@@ -1,8 +1,10 @@
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import { socketStore, userStore, lobbyStore, modalHandleStore } from "../../store";
 import { Container, UserCard } from "../../components";
 import { ReactionButton } from "./components";
+import usePreventWrongApproach from "../../hooks/usePreventWrongApproach";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -54,6 +56,9 @@ type participantType = {
 };
 
 const Reaction = () => {
+  const location = useLocation();
+  usePreventWrongApproach(location.pathname);
+
   const { userList, setUserList, setHeadCount } = lobbyStore();
   const { setModal } = modalHandleStore();
 

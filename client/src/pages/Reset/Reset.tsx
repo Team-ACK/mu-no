@@ -1,9 +1,9 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { modalHandleStore } from "../../store";
 
 const Reset = () => {
-  const { modal, setModal, setTemporaryData } = modalHandleStore();
+  const { setModal, setTemporaryData } = modalHandleStore();
   const { token } = useParams();
 
   useEffect(() => {
@@ -13,6 +13,7 @@ const Reset = () => {
     } else {
       window.location.replace("http://muno.fun");
     }
+    // eslint-disable-next-line
   }, []);
 
   return <div> </div>;
