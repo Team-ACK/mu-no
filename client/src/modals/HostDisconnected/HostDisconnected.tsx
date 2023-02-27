@@ -50,7 +50,7 @@ const HostDisconnected = () => {
       <p style={{ fontSize: "22px", marginBottom: "5px" }}>새로 게임을 시작해 주세요.</p>
       <S.Bottom>
         <Button
-          style={{ width: "40%", height: "55px" }}
+          style={{ width: "41%", height: "55px" }}
           onClick={() => {
             window.location.replace("/");
           }}
