@@ -102,7 +102,7 @@ const Reaction = () => {
         participant[i] ? (
           <UserCard
             speed={participant[i].recentSpeed.toString()}
-            divWidth="54px"
+            divWidth="58px"
             profileColor={`${participant[i].userColor}`}
             nickname={`${participant[i].nickname}`}
             isMe={socket?.id === userList[i].socketID}
@@ -110,12 +110,12 @@ const Reaction = () => {
             {participant[i].isDied ? (
               <>
                 <p style={{ display: "flex" }}>사망</p>
-                <span>❌</span>
+                <span style={{ marginLeft: "3px" }}>❌</span>
               </>
             ) : (
               <>
                 <p style={{ display: "flex" }}>생존</p>
-                <span>✅</span>
+                <span style={{ marginLeft: "3px" }}>✅</span>
               </>
             )}
           </UserCard>
