@@ -224,8 +224,8 @@ const Reaction = () => {
 
   useEffect(() => {
     if (!nickname) {
-      const url = "http://localhost:8080";
-      // const url = "http://muno.fun";
+      // const url = "http://localhost:8080";
+      const url = "http://muno.fun";
       window.location.replace(url);
     }
 
