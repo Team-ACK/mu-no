@@ -17,7 +17,7 @@ interface TextFieldPropsType {
 }
 
 const textFieldPalette = {
-  isDisabled: (disabled: boolean) => (disabled ? "#efefef" : "transparent"),
+  isDisabled: (disabled: boolean) => (disabled ? "#f8f8f8" : "initial"),
   primary: {
     borderColor: "1px solid rgb(0, 0, 0, 0.2)",
     focus: "1px solid #808088",
