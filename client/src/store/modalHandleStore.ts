@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 // Modal 추가시 타입 변경 요망
-type ModalType = "SignUp" | "FindPassword" | "ResetPassword" | false;
+type ModalType = "SignUp" | "FindPassword" | "ResetPassword" | "HostDisconnected" | false;
 
 interface ModalHandleStoreType {
   modal: ModalType;

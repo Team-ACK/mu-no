@@ -38,7 +38,7 @@ const S = {
 };
 
 const ResetPassword = () => {
-  const { temporaryData, removeModal } = modalHandleStore();
+  const { temporaryData } = modalHandleStore();
 
   const [passwordFirstRender, setPasswordFirstRender] = useState(true);
   const [password, setPassword] = useState("");
@@ -58,16 +58,24 @@ const ResetPassword = () => {
     setConfirmPassword(e.currentTarget.value);
   };
 
-  const validatePassword = () => {
+  const validatePassword = (): boolean => {
     // const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     const passwordRegex = /^.{8,15}$/;
-    if (passwordRegex.test(password)) setPasswordErr(0);
-    else setPasswordErr(1);
+    if (passwordRegex.test(password)) {
+      setPasswordErr(0);
+      return true;
+    }
+    setPasswordErr(1);
+    return false;
   };
 
-  const validateConfirmPassword = () => {
-    if (password === confirmPassword) setConfirmPasswordErr(false);
-    else setConfirmPasswordErr(true);
+  const validateConfirmPassword = (): boolean => {
+    if (password === confirmPassword) {
+      setConfirmPasswordErr(false);
+      return true;
+    }
+    setConfirmPasswordErr(true);
+    return false;
   };
 
   useEffect(() => {
@@ -89,10 +97,7 @@ const ResetPassword = () => {
   }, [confirmPassword]); // eslint-disable-line
 
   const validation = () => {
-    validatePassword();
-    validateConfirmPassword();
-
-    if (!passwordErr && !confirmPasswordErr) {
+    if (validatePassword() && validateConfirmPassword()) {
       return true;
     }
     return false;
@@ -129,7 +134,7 @@ const ResetPassword = () => {
             <Button
               style={{ width: "40%", height: "55px" }}
               onClick={() => {
-                removeModal();
+                window.location.replace("/");
               }}
             >
               로그인 화면으로
@@ -139,7 +144,7 @@ const ResetPassword = () => {
       ) : (
         <>
           <S.PasswordLayout>
-            <p>비밀번호</p>
+            <p>새로운 비밀번호</p>
             <TextField
               disabled={isLoading}
               style={{ height: "50%", width: "100%", marginLeft: "0px" }}

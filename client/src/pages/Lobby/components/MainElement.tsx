@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
-import { socketStore, lobbyStore, userStore } from "../../../store";
+import { socketStore, lobbyStore, userStore, modalHandleStore } from "../../../store";
 import { Button, UserCard } from "../../../components";
 import DropDown from "../../../assets/img/dropdown.svg";
 
@@ -115,6 +115,7 @@ const MainElement = () => {
   const { socket } = socketStore();
   const { isHost, roomCode } = userStore();
   const { userList, headCount } = lobbyStore();
+  const { setModal } = modalHandleStore();
 
   const [population, setPopulation] = useState(4);
   const [element, setElement] = useState<JSX.Element[]>([]);
@@ -187,6 +188,9 @@ const MainElement = () => {
     socket?.on("get-max-players", ({ maxPlayers }) => {
       setPopulation(maxPlayers);
     });
+    socket?.on("admin-exit", () => {
+      setModal("HostDisconnected");
+    });
     socket?.emit("get-max-players", { roomID: roomCode }, ({ maxPlayers }: { maxPlayers: number }) => {
       setPopulation(maxPlayers);
     });
@@ -194,6 +198,7 @@ const MainElement = () => {
     return () => {
       socket?.off("reaction-selected");
       socket?.off("get-max-players");
+      socket?.off("admin-exit");
     };
     // eslint-disable-next-line
   }, []);
