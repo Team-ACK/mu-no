@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Container } from "../../components";
 import { userStore, socketStore, lobbyStore } from "../../store";
 import { HeaderElement, MainElement, Description } from "./components";
+import usePreventWrongApproach from "../../hooks/usePreventWrongApproach";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -11,7 +12,7 @@ const LayoutStyle = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  border: 1px solid red;
+  /* border: 1px solid red; */
 `;
 
 const S = {
@@ -29,6 +30,7 @@ const S = {
 
 const Lobby = () => {
   const location = useLocation();
+  usePreventWrongApproach(location.pathname);
 
   const { socket } = socketStore();
   const { nickname, userColor, roomCode } = userStore();
@@ -37,6 +39,7 @@ const Lobby = () => {
   const [renderStatus, setRenderStatus] = useState<"valid" | "loading" | "isGaming" | "isFull" | "notExist">("loading");
 
   useEffect(() => {
+    // const enterUrl = "http://localhost:3000".concat(location.pathname.split("/lobby")[0]);
     // const enterUrl = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
     const enterUrl = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
     if (!nickname) {
@@ -69,9 +72,11 @@ const Lobby = () => {
   return (
     <Container>
       <>
-        <S.HeaderLayout>
-          <HeaderElement />
-        </S.HeaderLayout>
+        {renderStatus === "valid" ? (
+          <S.HeaderLayout>
+            <HeaderElement />
+          </S.HeaderLayout>
+        ) : null}
         <S.MainLayout>
           {renderStatus === "valid" ? (
             <MainElement />
