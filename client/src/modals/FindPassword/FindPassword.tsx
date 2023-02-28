@@ -86,7 +86,7 @@ const FindPassword = () => {
           <p style={{ fontSize: "22px" }}> 아이디 확인 메일이 발송되었습니다.</p>
           <S.Bottom>
             <Button
-              style={{ width: "40%", height: "55px" }}
+              style={{ width: "41%", height: "55px" }}
               onClick={() => {
                 removeModal();
               }}

@@ -121,7 +121,7 @@ const S = {
 
 const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) => {
   const navigate = useNavigate();
-  const { setRoomCode, setNickname, setUserColor, setIsHost } = userStore();
+  const { setRoomCode, setNickname, setUserColor, setIsHost, setIsMember } = userStore();
   const { socket } = socketStore();
   const { setModal } = modalHandleStore();
 
@@ -172,7 +172,12 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
   };
 
   const createRoom = () => {
-    setNickname(inputUserNickname === "" ? annonNickname : inputUserNickname);
+    if (tabToggle === "member") {
+      setNickname(loginedUserNickname);
+      setIsMember(true);
+    } else if (tabToggle === "guest") {
+      setNickname(inputUserNickname === "" ? annonNickname : inputUserNickname);
+    }
     setUserColor(profileColor);
     if (socket) {
       socket.emit(
@@ -203,7 +208,12 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
 
   const participateRoom = () => {
     // TODO: 회원 유저에 대한 조건부 처리 필요
-    setNickname(inputUserNickname === "" ? annonNickname : inputUserNickname);
+    if (tabToggle === "member") {
+      setNickname(loginedUserNickname);
+      setIsMember(true);
+    } else if (tabToggle === "guest") {
+      setNickname(inputUserNickname === "" ? annonNickname : inputUserNickname);
+    }
     setUserColor(profileColor);
     if (paramRoomCode) {
       // 파라미터를 통해서 방에 입장하려고 할 때
