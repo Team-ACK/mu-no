@@ -5,6 +5,8 @@ interface UserStoreType {
   setNickname: (nickname: string) => void;
   userColor: string;
   setUserColor: (userColor: string) => void;
+  isMember: boolean;
+  setIsMember: (isMember: boolean) => void;
   isHost: boolean;
   setIsHost: (isHost: boolean) => void;
   roomCode: string;
@@ -19,6 +21,10 @@ const userStore = create<UserStoreType>((set) => ({
   userColor: "",
   setUserColor: (userColor) => {
     set((_) => ({ userColor }));
+  },
+  isMember: false,
+  setIsMember: (isMember) => {
+    set((_) => ({ isMember }));
   },
   isHost: false,
   setIsHost: (isHost) => {
