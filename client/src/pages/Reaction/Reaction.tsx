@@ -2,8 +2,8 @@ import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { socketStore, userStore, lobbyStore, modalHandleStore } from "../../store";
-import { Container, UserCard } from "../../components";
-import { ReactionButton } from "./components";
+import { Container } from "../../components";
+import { ReactionButton, ParticipantList } from "./components";
 import usePreventWrongApproach from "../../hooks/usePreventWrongApproach";
 
 const LayoutStyle = styled.div`
@@ -14,6 +14,15 @@ const LayoutStyle = styled.div`
   height: 100%;
   width: 100%;
 `;
+
+type ParticipantType = {
+  admin: boolean;
+  nickname: string;
+  userColor: string;
+  socketID: string;
+  isDied: boolean;
+  recentSpeed: number;
+};
 
 const S = {
   GameWrapper: styled(LayoutStyle)`
@@ -46,135 +55,60 @@ const S = {
   `,
 };
 
-type participantType = {
-  admin: boolean;
-  nickname: string;
-  userColor: string;
-  socketID: string;
-  isDied: boolean;
-  recentSpeed: number;
-};
-
 const Reaction = () => {
   const location = useLocation();
   usePreventWrongApproach(location.pathname);
 
+  // global status
+  const { socket } = socketStore();
+  const { nickname, roomCode } = userStore();
   const { userList, setUserList, setHeadCount } = lobbyStore();
   const { setModal } = modalHandleStore();
 
-  const addDiedProps = () => {
-    const copy = JSON.parse(JSON.stringify(userList));
-    for (const element of copy) {
-      element.isDied = false;
-      element.recentSpeed = 0;
-    }
-    return copy;
-  };
+  // local status
+  const [round, setRound] = useState<number>(0); // 0: round 시작 전
+  const [stat, setStat] = useState<"ready" | "readyFinish" | "wait" | "click" | "clickFinish" | "die">("ready");
+  const [speed, setSpeed] = useState<number | null>(null);
+  const [participant, setParticipant] = useState<ParticipantType[]>(() =>
+    userList.map((user) => {
+      return { ...user, isDied: false, recentSpeed: 0 };
+    })
+  );
 
-  const [round, setRound] = useState(0);
-  const [participant, setParticipant] = useState<participantType[]>(addDiedProps);
-  const [stat, setStat] = useState<string>("ready");
-  const [speed, setSpeed] = useState<number>(0);
-  const [element, setElement] = useState<JSX.Element[]>([]);
-
-  useEffect(() => {
-    const newParticipant: participantType[] = [];
-
-    const sockets: string[] = [];
-    userList.map((data) => {
-      return sockets.push(data.socketID);
-    });
-    participant.forEach((data, _) => {
-      if (sockets.includes(data.socketID)) {
-        newParticipant.push(data);
-      }
-    });
-    setParticipant(newParticipant);
-  }, [userList]); // eslint-disable-line
-
-  const { socket } = socketStore();
-  const { nickname, roomCode } = userStore();
-
+  // useRef
   const renderDelay = useRef<NodeJS.Timeout | null>(null);
   const timeout = useRef<NodeJS.Timeout | null>(null);
   const startTime = useRef<Date>();
   const endTime = useRef<Date>();
 
-  const addUserLayout = () => {
-    const temp: JSX.Element[] = [];
-    for (let i = 0; i < 8; i += 1) {
-      temp.push(
-        participant[i] ? (
-          <UserCard
-            speed={participant[i].recentSpeed.toString()}
-            divWidth="58px"
-            profileColor={`${participant[i].userColor}`}
-            nickname={`${participant[i].nickname}`}
-            isMe={socket?.id === userList[i].socketID}
-          >
-            {participant[i].isDied ? (
-              <>
-                <p style={{ display: "flex" }}>사망</p>
-                <span style={{ marginLeft: "3px" }}>❌</span>
-              </>
-            ) : (
-              <>
-                <p style={{ display: "flex" }}>생존</p>
-                <span style={{ marginLeft: "3px" }}>✅</span>
-              </>
-            )}
-          </UserCard>
-        ) : (
-          <UserCard divWidth="54px" profileColor="black" nickname="비어있음">
-            <p> </p>
-          </UserCard>
-        )
-      );
+  // hooks
+  useEffect(() => {
+    if (!nickname) {
+      // const url = "http://localhost:8080";
+      const url = "http://muno.fun";
+      window.location.replace(url);
     }
-    setElement(temp);
-  };
-
-  const sendReady = () => {
-    socket?.emit("reaction-game-ready", { roomID: roomCode });
-    setStat("readyFinish");
-  };
-
-  const sendSpeed = () => {
-    // 소켓 emit
-    endTime.current = new Date();
-    setStat("");
-    if (endTime.current !== undefined && startTime.current !== undefined) {
-      const reactionSpeed: number = endTime.current.getTime() - startTime.current.getTime();
-      setSpeed(reactionSpeed);
-      socket?.emit("reaction-game-user-result", {
-        roomID: roomCode,
-        speed: reactionSpeed,
-      });
-      clearTimeout(timeout.current as NodeJS.Timeout);
-    }
-  };
+  }, []);
 
   useEffect(() => {
-    addUserLayout();
-    // eslint-disable-next-line
-  }, [participant]);
-
-  useEffect(() => {
-    // 소켓 on - stat이 die 가 아닐때 시간을 받는다면 stat을 wait으로 변경하고 n초뒤에 stat을 click로 바꿈
+    socket?.on("user-list", (data: { userList: any }) => {
+      setUserList(data.userList);
+      setHeadCount(data.userList.length);
+    });
     socket?.on("reaction-game-round-start", ({ randomTime }: { randomTime: number }) => {
       renderDelay.current = setTimeout(() => {
         if (stat !== "die") {
           setStat("wait");
         }
+        setParticipant(
+          participant.map((user) => {
+            return { ...user, recentSpeed: 0 };
+          })
+        );
         setRound(round + 1);
-        setParticipant(() => {
-          const copy = JSON.parse(JSON.stringify(participant));
-          for (const temp of copy) {
-            temp.recentSpeed = 0;
-          }
-          return copy;
-        });
+        // recentSpeed 0으로 초기화
       }, 1500);
+
       if (stat !== "die") {
         timeout.current = setTimeout(() => {
           setStat("click");
@@ -182,31 +116,31 @@ const Reaction = () => {
         }, randomTime);
       }
     });
-    // 소켓 on - stat이 die 가 아닐때 사용자들의 결과를 받는다면 sort후 탈락자 선별, 탈락자의 UserCard에 탈락을 표시하고 만약
-    // 자신이 탈락했다면, stat을 die로 변경함
+
     socket?.on(
       "reaction-game-round-result",
       ({ getGameResult }: { getGameResult: { socketID: string; speed: number }[] }) => {
-        const maxResult = getGameResult.reduce((prev, next) => {
+        // 임시 탈락자 선정 과정
+        const dropOut = getGameResult.reduce((prev, next) => {
           return prev.speed >= next.speed ? prev : next;
         });
-        if (socket.id === maxResult.socketID) {
+
+        if (socket.id === dropOut.socketID) {
           setStat("die");
         }
-        const copy = JSON.parse(JSON.stringify(participant));
-        for (const temp of copy) {
-          if (!temp.isDied) {
-            for (const asd of getGameResult) {
-              if (temp.socketID === asd.socketID) {
-                temp.recentSpeed = asd.speed;
-              }
+
+        setParticipant(
+          participant.map((user) => {
+            if (!user.isDied) {
+              return {
+                ...user,
+                recentSpeed: getGameResult.filter((data) => data.socketID === user.socketID)[0].speed,
+                isDied: user.socketID === dropOut.socketID,
+              };
             }
-          }
-          if (temp.socketID === maxResult.socketID) {
-            temp.isDied = true;
-          }
-        }
-        setParticipant(copy);
+            return user;
+          })
+        );
       }
     );
 
@@ -215,57 +149,62 @@ const Reaction = () => {
     });
 
     return () => {
+      socket?.off("user-list");
       socket?.off("reaction-game-round-start");
       socket?.off("reaction-game-round-result");
       socket?.off("admin-exit");
     };
-    // eslint-disable-next-line
   });
 
+  // Handle Participant - 참가자가 게임을 나가는 경우에 대한 처리
   useEffect(() => {
-    if (!nickname) {
-      // const url = "http://localhost:8080";
-      const url = "http://muno.fun";
-      window.location.replace(url);
+    setParticipant(participant.filter((user) => userList.some((item) => item.socketID === user.socketID)));
+  }, [userList]);
+
+  // 버튼 클릭 시 조건에 맞게 역할 수행
+  const clickEventHandler = () => {
+    switch (stat) {
+      case "ready":
+        socket?.emit("reaction-game-ready", { roomID: roomCode });
+        setStat("readyFinish");
+        break;
+      case "click":
+        clearTimeout(timeout.current as NodeJS.Timeout);
+        endTime.current = new Date();
+        setStat("clickFinish");
+        if (endTime.current !== undefined && startTime.current !== undefined) {
+          const reactionSpeed: number = endTime.current.getTime() - startTime.current.getTime();
+          setSpeed(reactionSpeed);
+          socket?.emit("reaction-game-user-result", {
+            roomID: roomCode,
+            speed: reactionSpeed,
+          });
+        }
+        break;
+      case "wait":
+        alert("너무 빨리 눌렀어요");
+        break;
     }
-
-    socket?.on("user-list", (data: { userList: any }) => {
-      setUserList(data.userList);
-      setHeadCount(data.userList.length);
-    });
-
-    return () => {
-      socket?.off("user-list");
-    };
-  }, []); // eslint-disable-line
+  };
 
   return (
     <Container>
       <S.GameWrapper>
         <S.WhiteSpaceTop>
           <S.RoundContainer>
-            <S.Round> {!round ? "준비" : `Round ${round}`}</S.Round>
+            <S.Round> {!round ? "준비" : `Round ${round}`} </S.Round>
           </S.RoundContainer>
         </S.WhiteSpaceTop>
         <S.GameMain>
-          <S.PlayerLayout>{element.slice(0, 4)}</S.PlayerLayout>
+          <S.PlayerLayout>
+            <ParticipantList participant={participant.slice(0, 4)} />
+          </S.PlayerLayout>
           <S.GameLayout>
-            {stat === "ready" ? (
-              <ReactionButton stat={stat} onClick={sendReady} />
-            ) : stat === "click" ? (
-              <ReactionButton stat={stat} onClick={sendSpeed} />
-            ) : stat === "wait" ? (
-              <ReactionButton
-                stat={stat}
-                onClick={() => {
-                  alert("너무 빨리 눌렀어요.");
-                }}
-              />
-            ) : (
-              <ReactionButton disabled stat={stat} speed={speed} />
-            )}
+            <ReactionButton stat={stat} onClick={clickEventHandler} speed={speed} />
           </S.GameLayout>
-          <S.PlayerLayout>{element.slice(-4)}</S.PlayerLayout>
+          <S.PlayerLayout>
+            <ParticipantList participant={participant.slice(4, 8)} />
+          </S.PlayerLayout>
         </S.GameMain>
         <S.WhiteSpaceBottom />
       </S.GameWrapper>
