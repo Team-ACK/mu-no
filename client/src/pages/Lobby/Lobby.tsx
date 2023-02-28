@@ -33,7 +33,7 @@ const Lobby = () => {
   usePreventWrongApproach(location.pathname);
 
   const { socket } = socketStore();
-  const { nickname, userColor, roomCode } = userStore();
+  const { nickname, userColor, roomCode, isMember } = userStore();
   const { setUserList, setHeadCount } = lobbyStore();
 
   const [renderStatus, setRenderStatus] = useState<"valid" | "loading" | "isGaming" | "isFull" | "notExist">("loading");
@@ -48,7 +48,7 @@ const Lobby = () => {
 
     socket?.emit(
       "join-room",
-      { nickname, userColor, roomID: roomCode },
+      { nickname, userColor, roomID: roomCode, isMember },
       (res: { isValid: boolean; reason?: "isGaming" | "isFull" }) => {
         if (res.isValid) {
           setRenderStatus("valid");
