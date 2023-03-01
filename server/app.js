@@ -9,7 +9,11 @@ const startServer = async () => {
     const app = express();
     const server = http.createServer(app);
     const { Server } = require("socket.io");
-    const io = new Server(server);
+    const io = new Server(server, {
+        cors: {
+            origin: "*",
+        },
+    });
 
     await loaders(app);
     socketHandler(io);
