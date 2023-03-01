@@ -1,4 +1,6 @@
 const ReactionData = require("../../models/class/reactionData");
+const User = require("../../models/schemas/user");
+const Reaction = require("../../models/schemas/reaction");
 
 module.exports = (io, socket, roomList, getUsersInfo) => {
     const playGame = (roomID) => {
@@ -8,14 +10,40 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
 
     const endGame = (roomID) => {
         roomList[roomID].setIsGaming(false);
-        console.log("finished game");
+        const gameResult = roomList[roomID].gameData.getGameResult();
+        io.to(roomID).emit("reaction-game-end", { gameResult: gameResult });
     };
+
+    socket.on("reaction-store-data", async ({ gameResult }) => {
+        try {
+            const user = await User.findOne({ nickname: socket.nickname });
+            const reactionId = user.reactionResult;
+
+            await Reaction.updateOne(
+                { _id: reactionId },
+                {
+                    $inc: {
+                        rank_avg: 0,
+                        num_people_together_avg: 0,
+                        click_speed_avg: gameResult[socket.id].click_speed_avg,
+                        foul_count_avg: 0,
+                        total_games: 0,
+                    },
+                }
+            );
+        } catch {
+            console.log("database store error");
+        }
+    });
 
     socket.on("reaction-selected", ({ roomID }) => {
         const room = roomList[roomID];
         const userLength = room.getUserList().length;
+
         room.setIsGaming(true);
         room.gameData = new ReactionData("reaction", userLength);
+        room.gameData.setInitResult(room.getUserList());
+
         io.to(roomID).emit("reaction-selected");
     });
 
@@ -24,22 +52,33 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
         const targetResultCounts = reactionData.getTargetResultCounts();
         reactionData.setGameResult({ socketID: socket.id, speed: speed });
 
-        const gameResult = reactionData.getGameResult();
-
+        const gameResult = reactionData.getGameRoundResult();
         if (gameResult.length !== targetResultCounts) return;
+        io.to(roomID).emit("reaction-game-round-result", { getGameResult: gameResult });
+    });
 
-        const getGameResult = reactionData.getGameResult();
-        io.to(roomID).emit("reaction-game-round-result", { getGameResult: getGameResult });
+    socket.on("reaction-game-next-round", ({ roomID, last }) => {
+        const reactionData = roomList[roomID].gameData;
+        const gameResult = reactionData.getGameRoundResult();
+        const targetResultCounts = reactionData.getTargetResultCounts();
 
-        console.log("게임 결과 : ", gameResult);
+        if (!last) {
+            const slowestUser = gameResult.reduce((prev, value) => {
+                return prev.speed >= value.speed ? prev : value;
+            });
+            io.sockets.sockets.get(slowestUser.socketID).isAlive = false;
+        }
+        const lastResultCounts = last ? 1 : 2;
+        reactionData.emptyResult();
 
-        const lastResultCounts = 2;
-        if (targetResultCounts === lastResultCounts) {
+        if (targetResultCounts <= lastResultCounts) {
             endGame(roomID);
         } else {
-            reactionData.setTargetResultCounts(targetResultCounts - 1);
-            console.log("targetResultCounts(게임중) : ", reactionData.getTargetResultCounts());
-            reactionData.setEmptyResult();
+            let die = 0;
+            getUsersInfo(roomID).forEach((user) => {
+                if (!user.isAlive) die++;
+            });
+            reactionData.setTargetResultCounts(roomList[roomID].getUserList().length - die);
             playGame(roomID);
         }
     });
