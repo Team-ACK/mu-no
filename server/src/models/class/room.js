@@ -51,8 +51,8 @@ class Room {
     removeExitUser(socket) {
         try {
             const idx = this.userList.indexOf(socket.id);
-
             if (idx > -1) this.userList.splice(idx, 1);
+
             if (this.gameData !== null) {
                 let lastUser;
                 lastUser = this.gameData.removeExitUser(socket);

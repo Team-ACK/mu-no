@@ -43,7 +43,6 @@ class ReactionData extends GameData {
         return this.getTargetResultCounts() === this.roundResult.length;
     }
     emptyResult() {
-        console.log(this.roundResult);
         this.roundResult.forEach((result) => {
             this.gameResult[result.socketID].click_speed_avg += result.speed;
         });

@@ -54,20 +54,28 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
 
         const gameResult = reactionData.getGameRoundResult();
         if (gameResult.length !== targetResultCounts) return;
-        io.to(roomID).emit("reaction-game-round-result", { getGameResult: gameResult });
+
+        const slowestUser = gameResult.reduce((prev, value) => {
+            return prev.speed >= value.speed ? prev : value;
+        });
+        io.sockets.sockets.get(slowestUser.socketID).isAlive = false;
+
+        const roundResult = gameResult.map((result) => {
+            return {
+                ...result,
+                isAlive: getUsersInfo(roomID).filter((user) => user.socketID === data.socketID)[0]
+                    .isAlive,
+            };
+        });
+        io.to(roomID).emit("reaction-game-round-result", {
+            getGameResult: roundResult,
+        });
     });
 
     socket.on("reaction-game-next-round", ({ roomID, last }) => {
         const reactionData = roomList[roomID].gameData;
-        const gameResult = reactionData.getGameRoundResult();
         const targetResultCounts = reactionData.getTargetResultCounts();
 
-        if (!last) {
-            const slowestUser = gameResult.reduce((prev, value) => {
-                return prev.speed >= value.speed ? prev : value;
-            });
-            io.sockets.sockets.get(slowestUser.socketID).isAlive = false;
-        }
         const lastResultCounts = last ? 1 : 2;
         reactionData.emptyResult();
 
