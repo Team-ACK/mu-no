@@ -35,7 +35,7 @@ const Lobby = () => {
 
   const { socket } = socketStore();
   const { nickname, userColor, roomCode, isMember } = userStore();
-  const { setUserList, setHeadCount } = lobbyStore();
+  const { setUserList, setHeadCount, isComeBack } = lobbyStore();
 
   const [renderStatus, setRenderStatus] = useState<"valid" | "loading" | "isGaming" | "isFull" | "notExist">("loading");
 
@@ -45,17 +45,21 @@ const Lobby = () => {
       window.location.replace(enterUrl);
     }
 
-    socket?.emit(
-      "join-room",
-      { nickname, userColor, roomID: roomCode, isMember },
-      (res: { isValid: boolean; reason?: "isGaming" | "isFull" }) => {
-        if (res.isValid) {
-          setRenderStatus("valid");
-        } else if (res.reason !== undefined) {
-          setRenderStatus(res.reason);
+    if (!isComeBack) {
+      socket?.emit(
+        "join-room",
+        { nickname, userColor, roomID: roomCode, isMember },
+        (res: { isValid: boolean; reason?: "isGaming" | "isFull" }) => {
+          if (res.isValid) {
+            setRenderStatus("valid");
+          } else if (res.reason !== undefined) {
+            setRenderStatus(res.reason);
+          }
         }
-      }
-    );
+      );
+    } else {
+      setRenderStatus("valid");
+    }
 
     socket?.on("user-list", ({ userList }: { userList: any }) => {
       setUserList(userList);
