@@ -20,7 +20,7 @@ const S = {
   `,
   MainLayout: styled(LayoutStyle)``,
   RightLayout: styled(LayoutStyle)``,
-  TestLayout: styled.div`
+  AlignLayout: styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
@@ -34,10 +34,10 @@ const HeaderElement = () => {
     <S.Wrapper>
       <S.LeftLayout>
         <Button buttonType="secondary" onClick={goPrevPage}>
-          <S.TestLayout>
+          <S.AlignLayout>
             <DropDown style={{ transform: "rotate(90deg)" }} width="25px" height="25px" fill="#6962ff" />
             <p style={{ fontWeight: "500", marginBottom: "2px" }}>뒤로가기</p>
-          </S.TestLayout>
+          </S.AlignLayout>
         </Button>
       </S.LeftLayout>
       <S.MainLayout>
