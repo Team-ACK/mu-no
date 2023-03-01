@@ -3,28 +3,52 @@ const GameData = require("./gameData");
 class ReactionData extends GameData {
     constructor(gameTitle, targetResultCounts) {
         super(gameTitle);
+        this.roundResult = [];
         this.targetResultCounts = targetResultCounts;
-        this.speed = 0;
     }
-    setSpeed(speed) {
-        this.speed = speed;
+    setInitResult(userList) {
+        userList.forEach((user) => {
+            this.gameResult[user] = {
+                rank_avg: 0,
+                num_people_together_avg: 0,
+                click_pos: [0, 0],
+                click_speed_avg: 0,
+                foul_count_avg: 0,
+                total_games: 0,
+            };
+        });
     }
+
     setTargetResultCounts(targetResultCounts) {
         this.targetResultCounts = targetResultCounts;
     }
-    getSpeed() {
-        return this.speed;
+
+    setGameResult(gameResult) {
+        this.roundResult.push(gameResult);
     }
+
     getTargetResultCounts() {
         return this.targetResultCounts;
     }
 
-    removeExitUser() {
-        setTargetResultCounts(this.targetResultCounts - 1);
+    getGameRoundResult() {
+        return this.roundResult;
     }
+    removeExitUser(socket) {
+        this.roundResult.forEach((result, index) => {
+            if (socket.id === result.socketID) this.roundResult.splice(index, 1);
+        });
 
-    setEmptyResult() {
-        this.gameResult = [];
+        if (socket.isAlive) this.setTargetResultCounts(this.targetResultCounts - 1);
+        return this.getTargetResultCounts() === this.roundResult.length;
+    }
+    emptyResult() {
+        console.log(this.roundResult);
+        this.roundResult.forEach((result) => {
+            this.gameResult[result.socketID].click_speed_avg += result.speed;
+        });
+
+        this.roundResult = [];
     }
 }
 

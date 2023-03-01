@@ -17,6 +17,8 @@ module.exports = (io) => {
                         userColor: item[1].userColor,
                         socketID: item[1].id,
                         isReady: item[1].isReady,
+                        isMember: item[1].isMember,
+                        isAlive: item[1].isAlive,
                     };
                     users.push(userInfo);
                 }

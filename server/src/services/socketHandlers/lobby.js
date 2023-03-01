@@ -7,15 +7,13 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
         socket.admin = true;
         socket.join(roomID);
 
-        const RoomObj = new Room(getUsersInfo(roomID));
+        const RoomObj = new Room();
         roomList[roomID] = RoomObj;
-
         done(roomID);
     });
 
-    socket.on("join-room", ({ nickname, userColor, roomID }, done) => {
+    socket.on("join-room", ({ nickname, userColor, roomID, isMember }, done) => {
         const isValidRoom = roomID in roomList;
-        console.log(roomID);
         if (isValidRoom) {
             const isGaming = roomList[roomID].getIsGaming();
             if (isGaming) {
@@ -30,18 +28,19 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
                 return;
             }
 
+            // set socket data
             if (!socket.admin) socket.join(roomID);
-
             if (!socket.admin) socket.admin = false;
+            socket.isMember = isMember ? true : false;
             socket.nickname = nickname;
             socket.userColor = userColor;
             socket.isReady = false;
+            socket.isAlive = true;
 
             const targetRoom = roomList[roomID];
-            const userList = getUsersInfo(roomID);
-
-            targetRoom.setUserList(userList);
-            io.to(roomID).emit("user-list", { userList: userList });
+            const usersInfo = getUsersInfo(roomID);
+            targetRoom.setUserList(socket.id);
+            io.to(roomID).emit("user-list", { userList: usersInfo });
             done({ isValid: true });
         } else {
             done({ isValid: false, reason: "notExist" });
@@ -59,7 +58,7 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
         done({ maxPlayers: getMaxPlayers });
     });
 
-    socket.on("disconnecting", () => {
+    socket.on("disconnecting", async () => {
         let roomID;
 
         for (let value of io.sockets.adapter.sids.get(socket.id).keys()) {
@@ -72,17 +71,23 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
             if (socket.admin) {
                 socket.admin = false;
 
-                io.to(roomID).emit("admin-exit");
-
                 for (let socketID of io.sockets.adapter.rooms.get(roomID)) {
-                    roomList[roomID].removeExitUser(socketID);
+                    roomList[roomID].removeExitUser(socket);
                     io.sockets.sockets.get(socketID).leave(roomID);
                 }
+
+                io.to(roomID).emit("admin-exit");
             } else {
-                roomList[roomID].removeExitUser(socket.id);
+                const lastUser = await roomList[roomID].removeExitUser(socket);
+                const isGaming = roomList[roomID].getIsGaming();
+                if (lastUser && isGaming) {
+                    const adminID = getUsersInfo(roomID)[0].socketID;
+                    const gameTitle = await roomList[roomID].gameData.getGameTitle();
+                    io.to(adminID).emit(`${gameTitle}-last-user-exit`);
+                }
                 socket.leave(roomID);
-                const userList = getUsersInfo(roomID);
-                io.to(roomID).emit("user-list", { userList: userList });
+                const usersInfo = await getUsersInfo(roomID);
+                io.to(roomID).emit("user-list", { userList: usersInfo });
             }
         }
     });

@@ -1,12 +1,12 @@
 class Room {
-    constructor(userList, maxPlayers = 4, isGaming = false, gameData = null) {
-        this.userList = userList; // Array
+    constructor(maxPlayers = 4, isGaming = false, gameData = null) {
+        this.userList = []; // Array
         this.maxPlayers = maxPlayers; // Number
         this.isGaming = isGaming; // Boolean
         this.gameData = gameData;
     }
-    setUserList(userList) {
-        this.userList = userList;
+    setUserList(socketID) {
+        this.userList.push(socketID);
     }
 
     setMaxPlayers(maxPlayers) {
@@ -48,14 +48,22 @@ class Room {
         }
     }
 
-    removeExitUser(socketID) {
+    removeExitUser(socket) {
         try {
-            const idx = this.userList.indexOf(socketID);
+            let lastUser;
+            const idx = this.userList.indexOf(socket.id);
             if (idx > -1) this.userList.splice(idx, 1);
-            if (this.gamaData) this.gameData.removeExitUser();
+            if (this.gamaData !== null) {
+                lastUser = this.gameData.removeExitUser(socket);
+            }
+            return lastUser;
         } catch (e) {
             throw new Error("방과 게임데이터가 연결되지 않았습니다.");
         }
     }
+
+    // addEntranceUser() {
+    //
+    // }
 }
 module.exports = Room;
