@@ -5,6 +5,7 @@ import { socketStore, userStore, lobbyStore, modalHandleStore } from "../../stor
 import { Container } from "../../components";
 import { ReactionButton, ParticipantList } from "./components";
 import usePreventWrongApproach from "../../hooks/usePreventWrongApproach";
+import {HOST_URL} from "../../utils/envProvider";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -84,8 +85,7 @@ const Reaction = () => {
   // hooks
   useEffect(() => {
     if (!nickname) {
-      // const url = "http://localhost:8080";
-      const url = "http://muno.fun";
+      const url = HOST_URL;
       window.location.replace(url);
     }
   }, []);

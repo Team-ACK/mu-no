@@ -5,6 +5,7 @@ import { Container } from "../../components";
 import { userStore, socketStore, lobbyStore } from "../../store";
 import { HeaderElement, MainElement, Description } from "./components";
 import usePreventWrongApproach from "../../hooks/usePreventWrongApproach";
+import { HOST_URL } from "../../utils/envProvider";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -39,9 +40,7 @@ const Lobby = () => {
   const [renderStatus, setRenderStatus] = useState<"valid" | "loading" | "isGaming" | "isFull" | "notExist">("loading");
 
   useEffect(() => {
-    // const enterUrl = "http://localhost:3000".concat(location.pathname.split("/lobby")[0]);
-    // const enterUrl = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
-    const enterUrl = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
+    const enterUrl = HOST_URL.concat(location.pathname.split("/lobby")[0]);
     if (!nickname) {
       window.location.replace(enterUrl);
     }

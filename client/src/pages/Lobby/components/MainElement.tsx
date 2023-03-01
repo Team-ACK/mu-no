@@ -5,6 +5,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { socketStore, lobbyStore, userStore, modalHandleStore } from "../../../store";
 import { Button, UserCard } from "../../../components";
 import DropDown from "../../../assets/img/dropdown.svg";
+import { HOST_URL } from "../../../utils/envProvider";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -122,12 +123,11 @@ const MainElement = () => {
   const [element, setElement] = useState<JSX.Element[]>([]);
 
   const populationList: number[] = [2, 3, 4, 5, 6, 7, 8];
-  // const inviteCode = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
-  const inviteCode = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
+  const inviteCode = HOST_URL.concat(location.pathname.split("/lobby")[0]);
   const optionList: JSX.Element[] = populationList.map((data) => {
     return (
       <option value={data} key={data}>
-        <p>플레이어 {data}명</p>
+        플레이어 {data}명
       </option>
     );
   });

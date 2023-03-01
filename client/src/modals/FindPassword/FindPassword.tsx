@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { TextField, Button } from "../../components";
 import { modalHandleStore } from "../../store";
+import { END_POINT } from "../../utils/envProvider";
 
 const CommonStyle = styled.div`
   display: flex;
@@ -59,7 +60,7 @@ const FindPassword = () => {
     if (userEmail !== "") {
       setIsLoading(true);
       axios
-        .post("/password/reset", { email: userEmail })
+        .post(`${END_POINT}/password/reset`, { email: userEmail })
         .then((res) => {
           if (res.data.success) {
             setSuccess(true);

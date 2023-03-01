@@ -1,5 +1,6 @@
 import { UserCard } from "../../../components";
 import { socketStore } from "../../../store";
+import { useEffect } from "react";
 
 // : React.FC<any>
 type ParticipantType = {
@@ -13,6 +14,9 @@ type ParticipantType = {
 
 const ParticipantList = ({ participant }: { participant: ParticipantType[] }) => {
   const { socket } = socketStore();
+  useEffect(() => {
+    console.log(participant);
+  }, [participant]);
 
   return (
     <>

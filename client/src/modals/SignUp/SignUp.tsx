@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { TextField, Button } from "../../components";
 import { modalHandleStore } from "../../store";
+import { END_POINT } from "../../utils/envProvider";
 
 const CommonStyle = styled.div`
   display: flex;
@@ -94,7 +95,7 @@ const SignUp = () => {
   };
 
   const checkUserEmailDuplicate = async (): Promise<boolean> => {
-    const response = await axios.get(`/checkEmail?email=${userEmail}`);
+    const response = await axios.get(`${END_POINT}/checkEmail?email=${userEmail}`);
     return response.data.isDuplicate;
   };
 
@@ -122,7 +123,7 @@ const SignUp = () => {
   };
 
   const checkUserNameDuplicate = async (): Promise<boolean> => {
-    const response = await axios.get(`/checkNickname?nickname=${userName}`);
+    const response = await axios.get(`${END_POINT}/checkNickname?nickname=${userName}`);
     return response.data.isDuplicate;
   };
 

@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { TextField, Profile, Button } from "../../../components";
 import { userStore, socketStore, modalHandleStore } from "../../../store";
+import { END_POINT } from "../../../utils/envProvider";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -155,7 +156,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
 
   const onSubmit = () => {
     if (inputEmail && inputPassword) {
-      axios.post("/signin", { email: inputEmail, password: inputPassword }).then((res) => {
+      axios.post(`${END_POINT}/signin`, { email: inputEmail, password: inputPassword }).then((res) => {
         if (res.data.success) {
           setLoginFailed(false);
           setLoginSuccess(true);
@@ -191,7 +192,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
 
   useEffect(() => {
     axios
-      .get("/user")
+      .get(`${END_POINT}/user`)
       .then((res) => {
         if (res.data.success) {
           setLoginSuccess(true);
@@ -224,7 +225,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
 
   const userLogout = () => {
     axios
-      .get("/logout")
+      .get(`${END_POINT}/logout`)
       .then((_) => {
         setLoginSuccess(false);
         setLoginedUserNickname("");
