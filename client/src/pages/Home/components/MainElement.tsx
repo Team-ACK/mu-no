@@ -26,6 +26,13 @@ const FlexAlignStyle = styled.div`
   flex-direction: column;
 `;
 
+const TabButtonStyle = styled(FlexAlignStyle)`
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  ${(props) => props.theme.typography.information};
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+`;
 const S = {
   LoginForm: styled(LayoutStyle)`
     justify-content: space-between;
@@ -63,28 +70,18 @@ const S = {
     margin-bottom: 5px;
     ${(props) => props.theme.typography.information};
   `,
-  GuestTabButton: styled(FlexAlignStyle)`
-    cursor: pointer;
-    ${(props) => props.theme.typography.information};
-    width: 100%;
-    height: 100%;
+  GuestTabButton: styled(TabButtonStyle)`
     background-color: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
       tabToggle === "member" ? "#fafafa" : ""};
     box-shadow: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
       tabToggle === "member" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 12px 0 0 0;
   `,
-  MemberTabButton: styled(FlexAlignStyle)`
+  MemberTabButton: styled(TabButtonStyle)`
     border-left: 1px solid rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    ${(props) => props.theme.typography.information};
-    width: 100%;
-    height: 100%;
     background-color: ${({ tabToggle }: { tabToggle: "guest" | "member" }) => (tabToggle === "guest" ? "#fafafa" : "")};
     box-shadow: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
       tabToggle === "guest" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 0 12px 0 0;
   `,
 
