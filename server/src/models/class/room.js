@@ -50,13 +50,16 @@ class Room {
 
     removeExitUser(socket) {
         try {
-            let lastUser;
             const idx = this.userList.indexOf(socket.id);
+
             if (idx > -1) this.userList.splice(idx, 1);
-            if (this.gamaData !== null) {
+            if (this.gameData !== null) {
+                let lastUser;
                 lastUser = this.gameData.removeExitUser(socket);
+                return lastUser;
+            } else {
+                return false;
             }
-            return lastUser;
         } catch (e) {
             throw new Error("방과 게임데이터가 연결되지 않았습니다.");
         }
