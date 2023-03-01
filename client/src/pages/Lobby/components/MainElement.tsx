@@ -5,6 +5,7 @@ import { CopyToClipboard } from "react-copy-to-clipboard";
 import { socketStore, lobbyStore, userStore, modalHandleStore } from "../../../store";
 import { Button, UserCard } from "../../../components";
 import DropDown from "../../../assets/img/dropdown.svg";
+import { HOST_URL } from "../../../utils/envProvider";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -24,7 +25,7 @@ const S = {
   `,
   PlayerListWrapper: styled(LayoutStyle)`
     flex-basis: 34%;
-    height: 100%;
+    height: 631px;
   `,
   PlayerListTop: styled(LayoutStyle)`
     flex-direction: row;
@@ -54,6 +55,7 @@ const S = {
   `,
   PlayerCountLayout: styled(LayoutStyle)`
     width: 80%;
+    height: 60px;
   `,
   PlayerSelectorLabel: styled.label`
     width: 100%;
@@ -65,15 +67,15 @@ const S = {
 
     &::before {
       content: "";
-      width: 20px;
-      height: 20px;
+      width: 25px;
+      height: 25px;
       display: flex;
       align-items: center;
       justify-content: center;
       position: absolute;
       top: 50%;
       transform: translateY(-50%);
-      right: 50px;
+      right: 40px;
       background-image: url(${DropDown});
       background-repeat: no-repeat;
       background-position: center center;
@@ -88,7 +90,7 @@ const S = {
     border-radius: 12px;
     padding-left: 10px;
     font-size: 18px;
-
+    font-weight: 550;
     &:focus {
       outline: none;
     }
@@ -121,8 +123,7 @@ const MainElement = () => {
   const [element, setElement] = useState<JSX.Element[]>([]);
 
   const populationList: number[] = [2, 3, 4, 5, 6, 7, 8];
-  // const inviteCode = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
-  const inviteCode = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
+  const inviteCode = HOST_URL.concat(location.pathname.split("/lobby")[0]);
   const optionList: JSX.Element[] = populationList.map((data) => {
     return (
       <option value={data} key={data}>
@@ -213,10 +214,10 @@ const MainElement = () => {
       <S.PlayerListWrapper>
         <S.PlayerListTop>
           <S.Player>
-            <p>플레이어</p>
+            <p style={{ fontWeight: "550", fontSize: "18px" }}>플레이어</p>
           </S.Player>
           <S.PlayerCount>
-            <p>
+            <p style={{ fontWeight: "550", fontSize: "16px" }}>
               {headCount}/{population}
             </p>
           </S.PlayerCount>
@@ -232,7 +233,7 @@ const MainElement = () => {
                   </S.PlayerSelector>
                 </S.PlayerSelectorLabel>
               ) : (
-                <p>플레이어 {population}</p>
+                <p style={{ fontWeight: "600" }}>플레이어 {population}명</p>
               )}
             </S.PlayerCountLayout>
           </S.SelectorLayout>
@@ -244,8 +245,11 @@ const MainElement = () => {
         {isHost === true ? (
           <Button onClick={gameStart}>게임 시작</Button>
         ) : (
-          <div>방장이 게임을 시작할 때 까지 기다려 주세요 :)</div>
+          <div style={{ fontWeight: "600", fontSize: "20px" }}>
+            방장이 게임을 시작할 때 까지 잠시만 기다려 주세요 :)
+          </div>
         )}
+        <br />
         <CopyToClipboard text={inviteCode}>
           <Button onClick={generateInviteCode}>초대 코드 복사</Button>
         </CopyToClipboard>

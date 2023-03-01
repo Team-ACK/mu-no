@@ -71,10 +71,15 @@ const ReactionButton: React.FC<any> = (props: any) => {
       ? "Click!"
       : stat === "die"
       ? "You Died"
-      : // 클릭후 속도를 표시
-        `${speed} ms`;
+      : stat === "clickFinish"
+      ? `${speed} ms`
+      : "";
 
-  return <S.Button {...props}>{description}</S.Button>;
+  return (
+    <S.Button {...props} disabled={stat === "die" || stat === "clickFinish"}>
+      {description}
+    </S.Button>
+  );
 };
 
 export default ReactionButton;

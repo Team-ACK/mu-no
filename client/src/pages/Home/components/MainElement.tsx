@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { TextField, Profile, Button } from "../../../components";
 import { userStore, socketStore, modalHandleStore } from "../../../store";
+import { END_POINT } from "../../../utils/envProvider";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -26,6 +27,13 @@ const FlexAlignStyle = styled.div`
   flex-direction: column;
 `;
 
+const TabButtonStyle = styled(FlexAlignStyle)`
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+  ${(props) => props.theme.typography.information};
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+`;
 const S = {
   LoginForm: styled(LayoutStyle)`
     justify-content: space-between;
@@ -63,28 +71,18 @@ const S = {
     margin-bottom: 5px;
     ${(props) => props.theme.typography.information};
   `,
-  GuestTabButton: styled(FlexAlignStyle)`
-    cursor: pointer;
-    ${(props) => props.theme.typography.information};
-    width: 100%;
-    height: 100%;
+  GuestTabButton: styled(TabButtonStyle)`
     background-color: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
       tabToggle === "member" ? "#fafafa" : ""};
     box-shadow: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
       tabToggle === "member" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 12px 0 0 0;
   `,
-  MemberTabButton: styled(FlexAlignStyle)`
+  MemberTabButton: styled(TabButtonStyle)`
     border-left: 1px solid rgba(0, 0, 0, 0.2);
-    cursor: pointer;
-    ${(props) => props.theme.typography.information};
-    width: 100%;
-    height: 100%;
     background-color: ${({ tabToggle }: { tabToggle: "guest" | "member" }) => (tabToggle === "guest" ? "#fafafa" : "")};
     box-shadow: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
       tabToggle === "guest" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: 0 12px 0 0;
   `,
 
@@ -158,7 +156,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
 
   const onSubmit = () => {
     if (inputEmail && inputPassword) {
-      axios.post("/signin", { email: inputEmail, password: inputPassword }).then((res) => {
+      axios.post(`${END_POINT}/signin`, { email: inputEmail, password: inputPassword }).then((res) => {
         if (res.data.success) {
           setLoginFailed(false);
           setLoginSuccess(true);
@@ -194,7 +192,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
 
   useEffect(() => {
     axios
-      .get("/user")
+      .get(`${END_POINT}/user`)
       .then((res) => {
         if (res.data.success) {
           setLoginSuccess(true);
@@ -227,7 +225,7 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
 
   const userLogout = () => {
     axios
-      .get("/logout")
+      .get(`${END_POINT}/logout`)
       .then((_) => {
         setLoginSuccess(false);
         setLoginedUserNickname("");

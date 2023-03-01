@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { TextField, Button } from "../../components";
 import { modalHandleStore } from "../../store";
+import { END_POINT } from "../../utils/envProvider";
 
 const CommonStyle = styled.div`
   display: flex;
@@ -107,7 +108,7 @@ const ResetPassword = () => {
     if (validation()) {
       setIsLoading(true);
       axios
-        .put("/password/reset", { code: temporaryData, password })
+        .put(`${END_POINT}/password/reset`, { code: temporaryData, password })
         .then((res) => {
           if (res.data.success) {
             setSuccess(true);

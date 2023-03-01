@@ -9,6 +9,7 @@
     "@types/react-copy-to-clipboard": "^5.0.4",
     "@types/react-dom": "^18.0.0",
     "axios": "^1.3.3",
+    "cross-env": "^7.0.3",
     "eslint-config-airbnb": "^19.0.4",
     "history": "^5.3.0",
     "react": "^18.2.0",
@@ -23,10 +24,9 @@
     "zustand": "^4.3.2"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "start": "cross-env REACT_APP_ENVIRONMENT=dev react-scripts start & cd ../server && npm run dev",
+    "dev-build": "cross-env REACT_APP_ENVIRONMENT=dev-build react-scripts build && cd ../server && npm run dev",
+    "build": "cross-env REACT_APP_ENVIRONMENT=production react-scripts build"
   },
   "eslintConfig": {
     "extends": [

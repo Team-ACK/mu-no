@@ -5,6 +5,7 @@ import { Container } from "../../components";
 import { userStore, socketStore, lobbyStore } from "../../store";
 import { HeaderElement, MainElement, Description } from "./components";
 import usePreventWrongApproach from "../../hooks/usePreventWrongApproach";
+import { HOST_URL } from "../../utils/envProvider";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -33,22 +34,20 @@ const Lobby = () => {
   usePreventWrongApproach(location.pathname);
 
   const { socket } = socketStore();
-  const { nickname, userColor, roomCode } = userStore();
+  const { nickname, userColor, roomCode, isMember } = userStore();
   const { setUserList, setHeadCount } = lobbyStore();
 
   const [renderStatus, setRenderStatus] = useState<"valid" | "loading" | "isGaming" | "isFull" | "notExist">("loading");
 
   useEffect(() => {
-    // const enterUrl = "http://localhost:3000".concat(location.pathname.split("/lobby")[0]);
-    // const enterUrl = "http://localhost:8080".concat(location.pathname.split("/lobby")[0]);
-    const enterUrl = "http://muno.fun".concat(location.pathname.split("/lobby")[0]);
+    const enterUrl = HOST_URL.concat(location.pathname.split("/lobby")[0]);
     if (!nickname) {
       window.location.replace(enterUrl);
     }
 
     socket?.emit(
       "join-room",
-      { nickname, userColor, roomID: roomCode },
+      { nickname, userColor, roomID: roomCode, isMember },
       (res: { isValid: boolean; reason?: "isGaming" | "isFull" }) => {
         if (res.isValid) {
           setRenderStatus("valid");
