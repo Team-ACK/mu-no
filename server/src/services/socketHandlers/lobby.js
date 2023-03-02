@@ -1,6 +1,10 @@
 const Room = require("../../models/class/room");
 
 module.exports = (io, socket, roomList, getUsersInfo) => {
+    const isValidRoom = (roomID) => {
+        return io.sockets.adapter.rooms.get(roomID) ? true : false;
+    };
+
     socket.on("create-room", (done) => {
         const roomID = new Date().getTime().toString(36);
 
@@ -13,8 +17,7 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
     });
 
     socket.on("join-room", ({ nickname, userColor, roomID, isMember }, done) => {
-        const isValidRoom = roomID in roomList;
-        if (isValidRoom) {
+        if (isValidRoom(roomID)) {
             const isGaming = roomList[roomID].getIsGaming();
             if (isGaming) {
                 done({ isValid: false, reason: "isGaming" });
@@ -56,6 +59,14 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
     socket.on("get-max-players", ({ roomID }, done) => {
         const getMaxPlayers = roomList[roomID].getMaxPlayers();
         done({ maxPlayers: getMaxPlayers });
+    });
+
+    socket.on("vaild-room", ({ roomID }, done) => {
+        if (isValidRoom(roomID)) {
+            done({ success: true });
+        } else {
+            done({ success: false, reason: "notExist" });
+        }
     });
 
     socket.on("disconnecting", async () => {
