@@ -1,11 +1,11 @@
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { socketStore, userStore, lobbyStore, modalHandleStore } from "../../store";
 import { Container } from "../../components";
 import { ReactionButton, ParticipantList } from "./components";
 import usePreventWrongApproach from "../../hooks/usePreventWrongApproach";
-import {HOST_URL} from "../../utils/envProvider";
+import { HOST_URL } from "../../utils/envProvider";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -58,12 +58,13 @@ const S = {
 
 const Reaction = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   usePreventWrongApproach(location.pathname);
 
   // global status
   const { socket } = socketStore();
-  const { nickname, roomCode } = userStore();
-  const { userList, setUserList, setHeadCount } = lobbyStore();
+  const { nickname, roomCode, isHost } = userStore();
+  const { userList, setUserList, setHeadCount, setIsComeBack } = lobbyStore();
   const { setModal } = modalHandleStore();
 
   // local status
@@ -107,7 +108,7 @@ const Reaction = () => {
         );
         setRound(round + 1);
         // recentSpeed 0으로 초기화
-      }, 1500);
+      }, 3000);
 
       if (stat !== "die") {
         timeout.current = setTimeout(() => {
@@ -119,28 +120,31 @@ const Reaction = () => {
 
     socket?.on(
       "reaction-game-round-result",
-      ({ getGameResult }: { getGameResult: { socketID: string; speed: number }[] }) => {
-        // 임시 탈락자 선정 과정
-        const dropOut = getGameResult.reduce((prev, next) => {
-          return prev.speed >= next.speed ? prev : next;
-        });
-
-        if (socket.id === dropOut.socketID) {
-          setStat("die");
+      ({ getGameResult }: { getGameResult: { socketID: string; speed: number; isAlive: boolean }[] }) => {
+        // 자신의 사망을 처리
+        const filterdMeData = getGameResult.filter((data) => data.socketID === socket.id);
+        if (filterdMeData.length === 1) {
+          if (!filterdMeData[0].isAlive) {
+            setStat("die");
+          }
         }
-
         setParticipant(
           participant.map((user) => {
-            if (!user.isDied) {
+            const filteredAllData: any = getGameResult.filter((data) => data.socketID === user.socketID);
+            if (filteredAllData.length === 1) {
               return {
                 ...user,
-                recentSpeed: getGameResult.filter((data) => data.socketID === user.socketID)[0].speed,
-                isDied: user.socketID === dropOut.socketID,
+                recentSpeed: filteredAllData[0].speed,
+                isDied: !filteredAllData[0].isAlive,
               };
             }
-            return user;
+            return user; // 이미 탈락한 사용자
           })
         );
+
+        if (isHost) {
+          socket?.emit("reaction-game-next-round", { roomID: roomCode, last: false });
+        }
       }
     );
 
@@ -148,13 +152,27 @@ const Reaction = () => {
       setModal("HostDisconnected");
     });
 
+    if (isHost) {
+      socket?.on("reaction-last-user-exit", () => {
+        socket?.emit("reaction-game-next-round", { roomID: roomCode, last: true });
+      });
+    }
+
+    socket?.on("reaction-game-end", (_: any) => {
+      setIsComeBack(true);
+      alert("게임 종료! 로비로 돌아갑니다 ");
+      navigate(`/${roomCode}/lobby`);
+    });
+
     return () => {
       socket?.off("user-list");
       socket?.off("reaction-game-round-start");
       socket?.off("reaction-game-round-result");
       socket?.off("admin-exit");
+      socket?.off("reaction-last-user-exit");
+      socket?.off("reaction-game-end");
     };
-  });
+  }, [socket, isHost, roomCode, participant, stat, round]);
 
   // Handle Participant - 참가자가 게임을 나가는 경우에 대한 처리
   useEffect(() => {

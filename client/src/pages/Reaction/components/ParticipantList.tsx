@@ -1,6 +1,5 @@
 import { UserCard } from "../../../components";
 import { socketStore } from "../../../store";
-import { useEffect } from "react";
 
 // : React.FC<any>
 type ParticipantType = {
@@ -14,10 +13,6 @@ type ParticipantType = {
 
 const ParticipantList = ({ participant }: { participant: ParticipantType[] }) => {
   const { socket } = socketStore();
-  useEffect(() => {
-    console.log(participant);
-  }, [participant]);
-
   return (
     <>
       {participant.map((data) => (
@@ -27,6 +22,7 @@ const ParticipantList = ({ participant }: { participant: ParticipantType[] }) =>
           profileColor={`${data.userColor}`}
           nickname={`${data.nickname}`}
           isMe={socket?.id === data.socketID}
+          usage="Reaction"
         >
           <>
             <p style={{ display: "flex" }}>{data.isDied ? "사망" : "생존"}</p>
@@ -35,7 +31,7 @@ const ParticipantList = ({ participant }: { participant: ParticipantType[] }) =>
         </UserCard>
       ))}
       {Array(4 - participant.length).fill(
-        <UserCard divWidth="54px" profileColor="black" nickname="비어있음">
+        <UserCard divWidth="54px" profileColor="black" nickname="비어있음" usage="Reaction">
           <p> </p>
         </UserCard>
       )}

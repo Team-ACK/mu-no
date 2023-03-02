@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { Container } from "../../components";
-import { userStore, socketStore, lobbyStore } from "../../store";
+import { userStore, socketStore, lobbyStore, modalHandleStore } from "../../store";
 import { HeaderElement, MainElement, Description } from "./components";
 import usePreventWrongApproach from "../../hooks/usePreventWrongApproach";
 import { HOST_URL } from "../../utils/envProvider";
@@ -35,7 +35,8 @@ const Lobby = () => {
 
   const { socket } = socketStore();
   const { nickname, userColor, roomCode, isMember } = userStore();
-  const { setUserList, setHeadCount } = lobbyStore();
+  const { setUserList, setHeadCount, isComeBack } = lobbyStore();
+  const { setModal } = modalHandleStore();
 
   const [renderStatus, setRenderStatus] = useState<"valid" | "loading" | "isGaming" | "isFull" | "notExist">("loading");
 
@@ -45,17 +46,30 @@ const Lobby = () => {
       window.location.replace(enterUrl);
     }
 
-    socket?.emit(
-      "join-room",
-      { nickname, userColor, roomID: roomCode, isMember },
-      (res: { isValid: boolean; reason?: "isGaming" | "isFull" }) => {
-        if (res.isValid) {
-          setRenderStatus("valid");
-        } else if (res.reason !== undefined) {
-          setRenderStatus(res.reason);
+    if (!isComeBack) {
+      socket?.emit(
+        "join-room",
+        { nickname, userColor, roomID: roomCode, isMember },
+        (res: { isValid: boolean; reason?: "isGaming" | "isFull" }) => {
+          if (res.isValid) {
+            setRenderStatus("valid");
+          } else if (res.reason !== undefined) {
+            setRenderStatus(res.reason);
+          }
         }
-      }
-    );
+      );
+    } else {
+      setRenderStatus("loading");
+
+      socket?.emit("vaild-room", { roomID: roomCode }, (res: { success: boolean; reason?: "notExist" }) => {
+        if (res.success) {
+          setRenderStatus("valid");
+        } else {
+          setRenderStatus(res.reason as "notExist");
+          setModal("HostDisconnected");
+        }
+      });
+    }
 
     socket?.on("user-list", ({ userList }: { userList: any }) => {
       setUserList(userList);

@@ -143,11 +143,12 @@ const MainElement = () => {
             profileColor={`${userList[i].userColor}`}
             nickname={`${userList[i].nickname}`}
             isMe={socket?.id === userList[i].socketID}
+            usage="Lobby"
           >
             <p>{userList[i].admin === true ? "방장" : "유저"}</p>
           </UserCard>
         ) : (
-          <UserCard divWidth="50px" profileColor="black" nickname="비어있음">
+          <UserCard divWidth="50px" profileColor="black" nickname="비어있음" usage="Lobby">
             <p> </p>
           </UserCard>
         )
