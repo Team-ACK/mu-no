@@ -4,7 +4,7 @@ const Reaction = require("../../models/schemas/reaction");
 
 module.exports = (io, socket, roomList, getUsersInfo) => {
     const playGame = (roomID) => {
-        const randomTime = Math.floor(Math.random() * 3000 + 4000);
+        const randomTime = Math.floor(Math.random() * 3000 + 6000);
         io.to(roomID).emit("reaction-game-round-start", { randomTime: randomTime });
     };
 
