@@ -70,13 +70,12 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
         if (roomID !== undefined) {
             if (socket.admin) {
                 socket.admin = false;
+                io.to(roomID).emit("admin-exit");
 
                 for (let socketID of io.sockets.adapter.rooms.get(roomID)) {
-                    roomList[roomID].removeExitUser(socket);
                     io.sockets.sockets.get(socketID).leave(roomID);
                 }
-
-                io.to(roomID).emit("admin-exit");
+                delete roomList[roomID];
             } else {
                 const lastUser = await roomList[roomID].removeExitUser(socket);
                 const isGaming = roomList[roomID].getIsGaming();
