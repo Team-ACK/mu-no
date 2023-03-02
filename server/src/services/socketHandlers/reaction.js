@@ -9,7 +9,7 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
     };
 
     const endGame = (roomID) => {
-        roomList[roomID].setIsGaming(false);
+        roomList[roomID].endGame(io);
         const gameResult = roomList[roomID].gameData.getGameResult();
         io.to(roomID).emit("reaction-game-end", { gameResult: gameResult });
     };

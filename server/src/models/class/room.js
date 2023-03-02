@@ -64,6 +64,12 @@ class Room {
             throw new Error("방과 게임데이터가 연결되지 않았습니다.");
         }
     }
+    endGame(io) {
+        this.setIsGaming(false);
+        for (let socket of io.sockets.sockets) {
+            socket[1].isReady = false;
+        }
+    }
 
     // addEntranceUser() {
     //
