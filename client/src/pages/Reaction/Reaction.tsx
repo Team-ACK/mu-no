@@ -108,7 +108,7 @@ const Reaction = () => {
         );
         setRound(round + 1);
         // recentSpeed 0으로 초기화
-      }, 1500);
+      }, 3000);
 
       if (stat !== "die") {
         timeout.current = setTimeout(() => {
@@ -128,7 +128,6 @@ const Reaction = () => {
             setStat("die");
           }
         }
-
         setParticipant(
           participant.map((user) => {
             const filteredAllData: any = getGameResult.filter((data) => data.socketID === user.socketID);
@@ -150,7 +149,6 @@ const Reaction = () => {
     );
 
     socket?.on("admin-exit", () => {
-      console.log("admin exit");
       setModal("HostDisconnected");
     });
 
@@ -162,8 +160,8 @@ const Reaction = () => {
 
     socket?.on("reaction-game-end", (_: any) => {
       setIsComeBack(true);
-      alert("게임 종료! 로비로 돌아갑니다");
-      // navigate(`/${roomCode}/lobby`);
+      alert("게임 종료! 로비로 돌아갑니다 ");
+      navigate(`/${roomCode}/lobby`);
     });
 
     return () => {
@@ -172,8 +170,9 @@ const Reaction = () => {
       socket?.off("reaction-game-round-result");
       socket?.off("admin-exit");
       socket?.off("reaction-last-user-exit");
+      socket?.off("reaction-game-end");
     };
-  });
+  }, [socket, isHost, roomCode, participant, stat, round]);
 
   // Handle Participant - 참가자가 게임을 나가는 경우에 대한 처리
   useEffect(() => {
