@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { ReactComponent as HostIcon } from "../../../assets/img/host.svg";
-import { ReactComponent as KickIcon } from "../../../assets/img/kick2.svg";
+import { ReactComponent as KickIcon } from "../../../assets/img/kick.svg";
 
 type Props = {
   useradmin: boolean;
