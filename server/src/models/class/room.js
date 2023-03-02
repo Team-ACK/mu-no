@@ -68,6 +68,7 @@ class Room {
         this.setIsGaming(false);
         for (let socket of io.sockets.sockets) {
             socket[1].isReady = false;
+            socket[1].isAlive = true;
         }
     }
 
