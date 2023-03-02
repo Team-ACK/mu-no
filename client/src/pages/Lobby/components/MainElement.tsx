@@ -30,14 +30,12 @@ const S = {
     height: 100%;
   `,
   PlayerListWrapper: styled(LayoutStyle)`
-    box-shadow: 0px 0px 10px 2px ${(props) => props.theme.palette.shadowColor};
     border: 2px solid lightgray;
     flex-basis: 34%;
     height: 631px;
   `,
   PlayerListTop: styled(LayoutStyle)`
     flex-direction: row;
-    /* border: 1px solid skyblue; */
     flex-basis: 9.3%;
     border-radius: 0px;
     border-bottom: 1.5px solid lightgray;
@@ -54,13 +52,11 @@ const S = {
   `,
 
   PlayerListBottom: styled(LayoutStyle)`
-    /* border: 1px solid skyblue; */
     flex-basis: 90.7%;
     height: 90.7%;
   `,
 
   SelectorLayout: styled(LayoutStyle)`
-    /* border: 1px solid purple; */
     flex-basis: 12.6%;
   `,
   PlayerCountLayout: styled(LayoutStyle)`
@@ -91,6 +87,13 @@ const S = {
       background-position: center center;
     }
   `,
+  UserPlayerCount: styled(FlexAlignStyle)`
+    border: 1px solid darkgray;
+    border-radius: 12px;
+    width: 250px;
+    height: 40px;
+    color: #363636;
+  `,
   PlayerSelector: styled.select`
     z-index: 2;
     background: transparent;
@@ -107,7 +110,6 @@ const S = {
   `,
   PlayerListLayout: styled(LayoutStyle)`
     justify-content: start;
-    /* border: 1px solid purple; */
     flex-basis: 87.4%;
     overflow-y: overlay;
     &::-webkit-scrollbar {
@@ -116,12 +118,13 @@ const S = {
   `,
   GameListWrapper: styled(LayoutStyle)`
     flex-basis: 64.2%;
+    border: 2px solid lightgray;
+    height: 100%;
   `,
   PlayerAuth: styled(FlexAlignStyle)`
     border-radius: 50%;
     width: 35px;
     height: 35px;
-    /* background-color: #8d8484; */
   `,
 };
 
@@ -255,7 +258,9 @@ const MainElement = () => {
                   </S.PlayerSelector>
                 </S.PlayerSelectorLabel>
               ) : (
-                <p style={{ fontWeight: "600" }}>플레이어 {population}명</p>
+                <S.UserPlayerCount>
+                  <p style={{ fontWeight: "600" }}>최대 플레이어 {population}명</p>
+                </S.UserPlayerCount>
               )}
             </S.PlayerCountLayout>
           </S.SelectorLayout>
