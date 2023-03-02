@@ -2,10 +2,13 @@ import styled from "styled-components";
 import { Button } from "../../../components";
 import { ReactComponent as DropDown } from "../../../assets/img/dropdown.svg";
 
-const LayoutStyle = styled.div`
+const FlexAlignStyle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+const LayoutStyle = styled(FlexAlignStyle)`
   flex-direction: row;
   width: 100%;
   height: 100%;
@@ -20,11 +23,7 @@ const S = {
   `,
   MainLayout: styled(LayoutStyle)``,
   RightLayout: styled(LayoutStyle)``,
-  AlignLayout: styled.div`
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  `,
+  AlignLayout: styled(FlexAlignStyle)``,
 };
 const HeaderElement = () => {
   const goPrevPage = () => {
