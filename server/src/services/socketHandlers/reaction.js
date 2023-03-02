@@ -63,7 +63,7 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
         const roundResult = gameResult.map((result) => {
             return {
                 ...result,
-                isAlive: getUsersInfo(roomID).filter((user) => user.socketID === data.socketID)[0]
+                isAlive: getUsersInfo(roomID).filter((user) => user.socketID === result.socketID)[0]
                     .isAlive,
             };
         });
