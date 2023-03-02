@@ -3,14 +3,19 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import { socketStore, lobbyStore, userStore, modalHandleStore } from "../../../store";
+import PlayerAuth from "./PlayerAuth";
 import { Button, UserCard } from "../../../components";
 import DropDown from "../../../assets/img/dropdown.svg";
+import { ReactComponent as HostIcon } from "../../../assets/img/host.svg";
+import { ReactComponent as KickIcon } from "../../../assets/img/kick2.svg";
 import { HOST_URL } from "../../../utils/envProvider";
 
-const LayoutStyle = styled.div`
+const FlexAlignStyle = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+const LayoutStyle = styled(FlexAlignStyle)`
   flex-direction: column;
   width: 100%;
   border-radius: 12px;
@@ -19,18 +24,23 @@ const LayoutStyle = styled.div`
 const S = {
   MainWrapper: styled(LayoutStyle)`
     flex-direction: row;
+
     justify-content: space-between;
     border: none;
     height: 100%;
   `,
   PlayerListWrapper: styled(LayoutStyle)`
+    box-shadow: 0px 0px 10px 2px ${(props) => props.theme.palette.shadowColor};
+    border: 2px solid lightgray;
     flex-basis: 34%;
     height: 631px;
   `,
   PlayerListTop: styled(LayoutStyle)`
     flex-direction: row;
-    border: 1px solid skyblue;
+    /* border: 1px solid skyblue; */
     flex-basis: 9.3%;
+    border-radius: 0px;
+    border-bottom: 1.5px solid lightgray;
   `,
   Player: styled(LayoutStyle)`
     flex-direction: row;
@@ -44,13 +54,13 @@ const S = {
   `,
 
   PlayerListBottom: styled(LayoutStyle)`
-    border: 1px solid skyblue;
+    /* border: 1px solid skyblue; */
     flex-basis: 90.7%;
     height: 90.7%;
   `,
 
   SelectorLayout: styled(LayoutStyle)`
-    border: 1px solid purple;
+    /* border: 1px solid purple; */
     flex-basis: 12.6%;
   `,
   PlayerCountLayout: styled(LayoutStyle)`
@@ -97,7 +107,7 @@ const S = {
   `,
   PlayerListLayout: styled(LayoutStyle)`
     justify-content: start;
-    border: 1px solid purple;
+    /* border: 1px solid purple; */
     flex-basis: 87.4%;
     overflow-y: overlay;
     &::-webkit-scrollbar {
@@ -106,6 +116,12 @@ const S = {
   `,
   GameListWrapper: styled(LayoutStyle)`
     flex-basis: 64.2%;
+  `,
+  PlayerAuth: styled(FlexAlignStyle)`
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    /* background-color: #8d8484; */
   `,
 };
 
@@ -131,7 +147,12 @@ const MainElement = () => {
       </option>
     );
   });
-
+  const kickPlayer = (event: React.MouseEvent<HTMLElement>) => {
+    const index: string | null = event.currentTarget.getAttribute("data-react-key");
+    if (index !== null) {
+      console.log(`강퇴당한 사람은 ${userList[parseInt(index, 10)].nickname} 입니다`);
+    }
+  };
   const addUserLayout = () => {
     const temp: JSX.Element[] = [];
 
@@ -145,7 +166,7 @@ const MainElement = () => {
             isMe={socket?.id === userList[i].socketID}
             usage="Lobby"
           >
-            <p>{userList[i].admin === true ? "방장" : "유저"}</p>
+            <PlayerAuth isHost={isHost} useradmin={userList[i].admin} kickPlayer={kickPlayer} index={i} />
           </UserCard>
         ) : (
           <UserCard divWidth="50px" profileColor="black" nickname="비어있음" usage="Lobby">
