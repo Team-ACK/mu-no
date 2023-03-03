@@ -77,6 +77,7 @@ const S = {
     box-shadow: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
       tabToggle === "member" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
     border-radius: 12px 0 0 0;
+    height: 44px;
   `,
   MemberTabButton: styled(TabButtonStyle)`
     border-left: 1px solid rgba(0, 0, 0, 0.2);
@@ -84,6 +85,7 @@ const S = {
     box-shadow: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
       tabToggle === "guest" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
     border-radius: 0 12px 0 0;
+    height: 44px;
   `,
 
   TabInfo: styled(FlexAlignStyle)`
@@ -114,6 +116,9 @@ const S = {
     height: 13px;
     margin: 0 3px;
     background-color: darkgray;
+  `,
+  TopWrapper: styled(FlexAlignStyle)`
+    justify-content: start;
   `,
 };
 
@@ -240,25 +245,29 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
   return (
     <>
       <S.LoginForm>
-        {paramRoomCode ? <S.TabInfo>방에 초대되었습니다!</S.TabInfo> : ""}
-        <S.TabLayout>
-          <S.GuestTabButton
-            tabToggle={tabToggle}
-            onClick={() => {
-              setTabToggle("guest");
-            }}
-          >
-            게스트
-          </S.GuestTabButton>
-          <S.MemberTabButton
-            tabToggle={tabToggle}
-            onClick={() => {
-              setTabToggle("member");
-            }}
-          >
-            회원
-          </S.MemberTabButton>
-        </S.TabLayout>
+        <S.TopWrapper>
+          {paramRoomCode ? <S.TabInfo>방에 초대되었습니다!</S.TabInfo> : ""}
+          <S.TabLayout>
+            <S.GuestTabButton
+              style={{ borderRadius: "0px" }}
+              tabToggle={tabToggle}
+              onClick={() => {
+                setTabToggle("guest");
+              }}
+            >
+              게스트
+            </S.GuestTabButton>
+            <S.MemberTabButton
+              style={{ borderRadius: "0px" }}
+              tabToggle={tabToggle}
+              onClick={() => {
+                setTabToggle("member");
+              }}
+            >
+              회원
+            </S.MemberTabButton>
+          </S.TabLayout>
+        </S.TopWrapper>
         <S.ProfileWrapper>
           {tabToggle === "guest" ? (
             <S.ProfileImgLayout>
