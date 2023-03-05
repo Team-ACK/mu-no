@@ -32,17 +32,10 @@ class Room {
         return this.isGaming;
     }
 
-    getGameResult() {
+    getGameData() {
         try {
-            return this.gameData.getGameResult();
-        } catch (e) {
-            throw new Error("방과 게임데이터가 연결되지 않았습니다.");
-        }
-    }
-
-    setEmptyResult() {
-        try {
-            return this.gameData.setEmptyResult();
+            if (this.gameData !== null) return this.gameData;
+            else return null;
         } catch (e) {
             throw new Error("방과 게임데이터가 연결되지 않았습니다.");
         }

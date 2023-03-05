@@ -74,7 +74,7 @@ module.exports = (router) => {
         const dupNickname = await User.exists({ nickname: nickname });
 
         if (dupEmail || dupNickname) {
-            return res.status(409).send({ success: false, message: "Duplcate email or nickname" });
+            return res.status(409).send({ success: false, message: "Duplicate email or nickname" });
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -82,11 +82,12 @@ module.exports = (router) => {
 
         /*  나중에 게임마다 인스턴스를 만들어야 하니까 후에 js파일 만들어서 나누기  */
         const reactionInstance = new Reaction({
-            rank_avg: 0,
-            num_people_together_avg: 0,
-            click_pos: { x: 0, y: 0 },
-            click_speed_avg: 0,
-            foul_count_avg: 0,
+            rank_sum: 0,
+            num_people_together_sum: 0,
+            click_speed_sum: 0,
+            foul_count_sum: 0,
+            click_pos_sum: [0, 0],
+            total_rounds: 0,
             total_games: 0,
         });
 
