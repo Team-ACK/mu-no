@@ -23,11 +23,13 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
                 { _id: reactionId },
                 {
                     $inc: {
-                        rank_avg: 0,
-                        num_people_together_avg: 0,
-                        click_speed_avg: gameResult[socket.id].click_speed_avg,
-                        foul_count_avg: 0,
-                        total_games: 0,
+                        rank_sum: 0,
+                        num_people_together_sum: 0,
+                        click_speed_sum: gameResult[socket.id].click_speed_sum,
+                        foul_count_sum: 0,
+                        click_pos_sum: [0, 0],
+                        total_rounds: 0,
+                        total_games: 1,
                     },
                 }
             );
@@ -50,9 +52,9 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
     socket.on("reaction-game-user-result", ({ roomID, speed }) => {
         const reactionData = roomList[roomID].gameData;
         const targetResultCounts = reactionData.getTargetResultCounts();
-        reactionData.setGameResult({ socketID: socket.id, speed: speed });
+        reactionData.setRoundResult({ socketID: socket.id, speed: speed });
 
-        const gameResult = reactionData.getGameRoundResult();
+        const gameResult = reactionData.getRoundResult();
         if (gameResult.length !== targetResultCounts) return;
 
         const slowestUser = gameResult.reduce((prev, value) => {
@@ -93,9 +95,9 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
 
     socket.on("reaction-game-ready", ({ roomID }) => {
         socket.isReady = !socket.isReady;
-        const userList = getUsersInfo(roomID);
+        const usersInfo = getUsersInfo(roomID);
         let allReady = true;
-        userList.forEach((user) => {
+        usersInfo.forEach((user) => {
             if (!user.isReady) {
                 allReady = false;
             }

@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const { Schema } = mongoose;
-const Reaction = require("./reaction");
 
 const UserSchema = new Schema(
     {
@@ -28,7 +27,5 @@ const UserSchema = new Schema(
     },
     { timestamps: true }
 );
-
-// UserSchema.methods.verifyPassword = function (pass, next) {};
 
 module.exports = mongoose.model("User", UserSchema);

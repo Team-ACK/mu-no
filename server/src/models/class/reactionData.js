@@ -9,11 +9,11 @@ class ReactionData extends GameData {
     setInitResult(userList) {
         userList.forEach((user) => {
             this.gameResult[user] = {
-                rank_avg: 0,
-                num_people_together_avg: 0,
-                click_pos: [0, 0],
-                click_speed_avg: 0,
-                foul_count_avg: 0,
+                rank: 0,
+                num_people_together: 0,
+                click_speed: 0,
+                foul_count: 0,
+                total_rounds: 0,
                 total_games: 0,
             };
         });
@@ -23,7 +23,7 @@ class ReactionData extends GameData {
         this.targetResultCounts = targetResultCounts;
     }
 
-    setGameResult(gameResult) {
+    setRoundResult(gameResult) {
         this.roundResult.push(gameResult);
     }
 
@@ -31,7 +31,7 @@ class ReactionData extends GameData {
         return this.targetResultCounts;
     }
 
-    getGameRoundResult() {
+    getRoundResult() {
         return this.roundResult;
     }
     removeExitUser(socket) {
@@ -44,7 +44,8 @@ class ReactionData extends GameData {
     }
     emptyResult() {
         this.roundResult.forEach((result) => {
-            this.gameResult[result.socketID].click_speed_avg += result.speed;
+            this.gameResult[result.socketID].click_speed += result.speed;
+            // 여기 나중에 제대로 처리해야함
         });
 
         this.roundResult = [];

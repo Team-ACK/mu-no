@@ -2,7 +2,7 @@ const Room = require("../../models/class/room");
 
 module.exports = (io, socket, roomList, getUsersInfo) => {
     const isValidRoom = (roomID) => {
-        return io.sockets.adapter.rooms.get(roomID) ? true : false;
+        return io.sockets.adapter.rooms.has(roomID);
     };
 
     socket.on("create-room", (done) => {
@@ -13,6 +13,7 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
 
         const RoomObj = new Room();
         roomList[roomID] = RoomObj;
+
         done(roomID);
     });
 
@@ -32,18 +33,21 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
             }
 
             // set socket data
-            if (!socket.admin) socket.join(roomID);
-            if (!socket.admin) socket.admin = false;
-            socket.isMember = isMember ? true : false;
+            if (!socket.admin) {
+                socket.join(roomID);
+                socket.admin = false;
+            }
+            socket.isMember = isMember;
             socket.nickname = nickname;
             socket.userColor = userColor;
             socket.isReady = false;
             socket.isAlive = true;
 
-            const targetRoom = roomList[roomID];
+            roomList[roomID].setUserList(socket.id);
+
             const usersInfo = getUsersInfo(roomID);
-            targetRoom.setUserList(socket.id);
             io.to(roomID).emit("user-list", { userList: usersInfo });
+
             done({ isValid: true });
         } else {
             done({ isValid: false, reason: "notExist" });
@@ -52,13 +56,12 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
 
     socket.on("set-max-players", ({ roomID, maxPlayers }) => {
         roomList[roomID].setMaxPlayers(maxPlayers);
-        const getMaxPlayers = roomList[roomID].getMaxPlayers();
-        io.to(roomID).emit("get-max-players", { maxPlayers: getMaxPlayers });
+        io.to(roomID).emit("get-max-players", { maxPlayers: maxPlayers });
     });
 
     socket.on("get-max-players", ({ roomID }, done) => {
-        const getMaxPlayers = roomList[roomID].getMaxPlayers();
-        done({ maxPlayers: getMaxPlayers });
+        const maxPlayers = roomList[roomID].getMaxPlayers();
+        done({ maxPlayers: maxPlayers });
     });
 
     socket.on("vaild-room", ({ roomID }, done) => {
@@ -92,7 +95,7 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
                 const isGaming = roomList[roomID].getIsGaming();
                 if (lastUser && isGaming) {
                     const adminID = getUsersInfo(roomID)[0].socketID;
-                    const gameTitle = await roomList[roomID].gameData.getGameTitle();
+                    const gameTitle = roomList[roomID].gameData.getGameTitle();
                     io.to(adminID).emit(`${gameTitle}-last-user-exit`);
                 }
                 socket.leave(roomID);
