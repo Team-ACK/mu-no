@@ -17,7 +17,8 @@ const S = {
     border-radius: 50%;
     width: 35px;
     height: 35px;
-    border: ${({ useradmin }: { useradmin: boolean }) => (useradmin === true ? "1px solid gold" : "2px solid red")};
+    /* border: ${({ useradmin }: { useradmin: boolean }) =>
+      useradmin === true ? "1px solid gold" : "2px solid red"}; */
     cursor: ${({ useradmin }: { useradmin: boolean }) => (useradmin === true ? "default" : "pointer")};
   `,
 };

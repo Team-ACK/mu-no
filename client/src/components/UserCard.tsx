@@ -10,6 +10,7 @@ type Props = {
   divWidth: string | undefined;
   speed?: string;
   usage?: "Reaction" | "Lobby";
+  isMember?: boolean;
 };
 
 const LayoutStyle = styled.div`
@@ -66,7 +67,16 @@ const S = {
   `,
 };
 
-const UserCard: React.FC<Props> = ({ children, profileColor, nickname, isMe, divWidth, speed, usage }: Props) => (
+const UserCard: React.FC<Props> = ({
+  children,
+  profileColor,
+  nickname,
+  isMe,
+  divWidth,
+  speed,
+  usage,
+  isMember,
+}: Props) => (
   <S.Wrapper>
     <S.PlayerLayout>
       <S.UserImgLayout profileColor={profileColor}>
@@ -77,7 +87,11 @@ const UserCard: React.FC<Props> = ({ children, profileColor, nickname, isMe, div
         )}
       </S.UserImgLayout>
 
-      <S.UserNameLayout isMe={isMe}>{nickname}</S.UserNameLayout>
+      <S.UserNameLayout isMe={isMe}>{`${nickname}${
+        // TODO: 회원 여부 표시 필요
+        // isMember === true || isMember === undefined ? "" : " 🌱"
+        isMember === true || isMember === undefined ? "" : ""
+      }`}</S.UserNameLayout>
 
       {usage === "Reaction" ? (
         <S.ScoreLayout>{speed === "0" || speed === undefined ? " " : `${speed}ms `}</S.ScoreLayout>

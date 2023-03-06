@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { TextField, Profile, Button } from "../../../components";
 import { userStore, socketStore, modalHandleStore } from "../../../store";
-import { END_POINT } from "../../../utils/envProvider";
+import { HOST_URL, END_POINT } from "../../../utils/envProvider";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -208,7 +208,6 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
   }, []);
 
   const participateRoom = () => {
-    // TODO: 회원 유저에 대한 조건부 처리 필요
     if (tabToggle === "member") {
       setNickname(loginedUserNickname);
       setIsMember(true);
@@ -221,8 +220,8 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
       setRoomCode(paramRoomCode);
       navigate(`${paramRoomCode}/lobby`);
     } else {
-      setRoomCode(inputRoomCode);
-      navigate(`${inputRoomCode}/lobby`);
+      setRoomCode(inputRoomCode.replace(`${HOST_URL}/`, "").replace("/lobby", ""));
+      navigate(`${inputRoomCode.replace(`${HOST_URL}/`, "").replace("/lobby", "")}/lobby`);
     }
   };
 
