@@ -6,8 +6,6 @@ import { socketStore, lobbyStore, userStore, modalHandleStore } from "../../../s
 import PlayerAuth from "./PlayerAuth";
 import { Button, UserCard } from "../../../components";
 import DropDown from "../../../assets/img/dropdown.svg";
-import { ReactComponent as HostIcon } from "../../../assets/img/host.svg";
-import { ReactComponent as KickIcon } from "../../../assets/img/kick2.svg";
 import { HOST_URL } from "../../../utils/envProvider";
 
 const FlexAlignStyle = styled.div`
@@ -103,7 +101,7 @@ const S = {
     border-radius: 12px;
     padding-left: 10px;
     font-size: 18px;
-    font-weight: 550;
+    font-weight:400;
     &:focus {
       outline: none;
     }

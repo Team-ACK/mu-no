@@ -71,25 +71,25 @@ const S = {
     margin-bottom: 5px;
     ${(props) => props.theme.typography.information};
   `,
-  GuestTabButton: styled(TabButtonStyle)`
-    background-color: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
-      tabToggle === "member" ? "#fafafa" : ""};
-    box-shadow: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
-      tabToggle === "member" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
-    border-radius: 12px 0 0 0;
+  GuestTabButton: styled(TabButtonStyle)<{ tabToggle: "guest" | "member"; enableRadius: boolean }>`
+    background-color: ${({ tabToggle }) => (tabToggle === "member" ? "#fafafa" : "")};
+    box-shadow: ${({ tabToggle }) => (tabToggle === "member" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : "")};
+    border-radius: ${({ enableRadius }) => (enableRadius ? "12px 0 0 0" : "0")};
+    height: 54px;
   `,
-  MemberTabButton: styled(TabButtonStyle)`
+  MemberTabButton: styled(TabButtonStyle)<{ tabToggle: "guest" | "member"; enableRadius: boolean }>`
     border-left: 1px solid rgba(0, 0, 0, 0.2);
     background-color: ${({ tabToggle }: { tabToggle: "guest" | "member" }) => (tabToggle === "guest" ? "#fafafa" : "")};
     box-shadow: ${({ tabToggle }: { tabToggle: "guest" | "member" }) =>
       tabToggle === "guest" ? "rgba(0, 0, 0, 0.06) 0px 2px 4px 0px inset" : ""};
-    border-radius: 0 12px 0 0;
+    border-radius: ${({ enableRadius }) => (enableRadius ? "0 12px 0 0" : "0")};
+    height: 54px;
   `,
 
   TabInfo: styled(FlexAlignStyle)`
-    ${(props) => props.theme.typography.information};
+    font-size: 21px;
     width: 100%;
-    height: 31px;
+    height: 34px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   `,
   TextFieldWrapper: styled.div`
@@ -114,6 +114,9 @@ const S = {
     height: 13px;
     margin: 0 3px;
     background-color: darkgray;
+  `,
+  TopWrapper: styled(FlexAlignStyle)`
+    justify-content: start;
   `,
 };
 
@@ -240,25 +243,35 @@ const MainElement = ({ paramRoomCode }: { paramRoomCode: string | undefined }) =
   return (
     <>
       <S.LoginForm>
-        {paramRoomCode ? <S.TabInfo>방에 초대되었습니다!</S.TabInfo> : ""}
-        <S.TabLayout>
-          <S.GuestTabButton
-            tabToggle={tabToggle}
-            onClick={() => {
-              setTabToggle("guest");
-            }}
-          >
-            게스트
-          </S.GuestTabButton>
-          <S.MemberTabButton
-            tabToggle={tabToggle}
-            onClick={() => {
-              setTabToggle("member");
-            }}
-          >
-            회원
-          </S.MemberTabButton>
-        </S.TabLayout>
+        <S.TopWrapper>
+          {paramRoomCode ? (
+            <S.TabInfo>
+              <p>방에 초대되었습니다!</p>
+            </S.TabInfo>
+          ) : (
+            ""
+          )}
+          <S.TabLayout>
+            <S.GuestTabButton
+              tabToggle={tabToggle}
+              enableRadius={paramRoomCode === undefined}
+              onClick={() => {
+                setTabToggle("guest");
+              }}
+            >
+              게스트
+            </S.GuestTabButton>
+            <S.MemberTabButton
+              tabToggle={tabToggle}
+              enableRadius={paramRoomCode === undefined}
+              onClick={() => {
+                setTabToggle("member");
+              }}
+            >
+              회원
+            </S.MemberTabButton>
+          </S.TabLayout>
+        </S.TopWrapper>
         <S.ProfileWrapper>
           {tabToggle === "guest" ? (
             <S.ProfileImgLayout>
