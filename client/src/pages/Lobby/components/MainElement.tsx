@@ -168,6 +168,7 @@ const MainElement = () => {
             nickname={`${userList[i].nickname}`}
             isMe={socket?.id === userList[i].socketID}
             usage="Lobby"
+            isMember={userList[i].isMember}
           >
             <PlayerAuth isHost={isHost} useradmin={userList[i].admin} kickPlayer={kickPlayer} index={i} />
           </UserCard>
