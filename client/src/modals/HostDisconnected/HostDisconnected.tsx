@@ -14,6 +14,7 @@ const NonContentStyle = styled(CommonStyle)`
   flex-basis: 15%;
   color: ${(props) => props.theme.typography.button};
 `;
+
 const ContentStyle = styled(CommonStyle)`
   color: gray;
   width: 100%;
