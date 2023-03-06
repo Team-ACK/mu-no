@@ -1,15 +1,9 @@
 import { create } from "zustand";
-
-type userType = {
-  admin: boolean;
-  nickname: string;
-  userColor: string;
-  socketID: string;
-};
+import UserType from "./types/UserType";
 
 interface LobbyStoreType {
-  userList: userType[];
-  setUserList: (userList: userType[]) => void;
+  userList: UserType[];
+  setUserList: (userList: UserType[]) => void;
   headCount: string;
   setHeadCount: (headCount: string) => void;
   isComeBack: boolean;

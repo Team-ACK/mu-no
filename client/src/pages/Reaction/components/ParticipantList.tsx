@@ -1,15 +1,12 @@
 import { UserCard } from "../../../components";
 import { socketStore } from "../../../store";
+import UserType from "../../../store/types/UserType";
 
 // : React.FC<any>
-type ParticipantType = {
-  admin: boolean;
-  nickname: string;
-  userColor: string;
-  socketID: string;
+interface ParticipantType extends UserType {
   isDied: boolean;
   recentSpeed: number;
-};
+}
 
 const ParticipantList = ({ participant }: { participant: ParticipantType[] }) => {
   const { socket } = socketStore();
@@ -23,6 +20,7 @@ const ParticipantList = ({ participant }: { participant: ParticipantType[] }) =>
           nickname={`${data.nickname}`}
           isMe={socket?.id === data.socketID}
           usage="Reaction"
+          isMember={data.isMember}
         >
           <>
             <p style={{ display: "flex" }}>{data.isDied ? "사망" : "생존"}</p>
