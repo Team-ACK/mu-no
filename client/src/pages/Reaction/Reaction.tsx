@@ -1,11 +1,12 @@
 import styled from "styled-components";
 import { useState, useEffect, useRef } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { socketStore, userStore, lobbyStore, modalHandleStore } from "../../store";
 import { Container } from "../../components";
-import { ReactionButton, ParticipantList } from "./components";
+import { ReactionButton, ParticipantList, Result } from "./components";
 import usePreventWrongApproach from "../../hooks/usePreventWrongApproach";
 import { HOST_URL } from "../../utils/envProvider";
+import UserType from "../../store/types/UserType";
 
 const LayoutStyle = styled.div`
   display: flex;
@@ -16,14 +17,12 @@ const LayoutStyle = styled.div`
   width: 100%;
 `;
 
-type ParticipantType = {
-  admin: boolean;
-  nickname: string;
-  userColor: string;
-  socketID: string;
+interface ParticipantType extends UserType {
+  speedList: number[];
+  recentSpeed: number; // for Render
   isDied: boolean;
-  recentSpeed: number;
-};
+  isExit: boolean;
+}
 
 const S = {
   GameWrapper: styled(LayoutStyle)`
@@ -58,7 +57,6 @@ const S = {
 
 const Reaction = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   usePreventWrongApproach(location.pathname);
 
   // global status
@@ -68,12 +66,24 @@ const Reaction = () => {
   const { setModal } = modalHandleStore();
 
   // local status
-  const [round, setRound] = useState<number>(0); // 0: round 시작 전
+  const [gameResult, setGameResult] = useState<
+    | {
+        isExit: boolean;
+        rank: number;
+        isMe: boolean;
+        userColor: string;
+        nickname: string;
+        avgSpeed: number;
+        minSpeed: number;
+      }[]
+    | null
+  >(null);
+  const [round, setRound] = useState<number>(0); // 0: round 시작 전, -1: 게임 종료
   const [stat, setStat] = useState<"ready" | "readyFinish" | "wait" | "click" | "clickFinish" | "die">("ready");
   const [speed, setSpeed] = useState<number | null>(null);
   const [participant, setParticipant] = useState<ParticipantType[]>(() =>
     userList.map((user) => {
-      return { ...user, isDied: false, recentSpeed: 0 };
+      return { ...user, isDied: false, recentSpeed: 0, isExit: false, speedList: [] };
     })
   );
 
@@ -132,9 +142,11 @@ const Reaction = () => {
           participant.map((user) => {
             const filteredAllData: any = getGameResult.filter((data) => data.socketID === user.socketID);
             if (filteredAllData.length === 1) {
+              console.log(!filteredAllData[0].isAlive);
               return {
                 ...user,
                 recentSpeed: filteredAllData[0].speed,
+                speedList: [...user.speedList, filteredAllData[0].speed],
                 isDied: !filteredAllData[0].isAlive,
               };
             }
@@ -160,8 +172,50 @@ const Reaction = () => {
 
     socket?.on("reaction-game-end", (_: any) => {
       setIsComeBack(true);
-      alert("게임 종료! 로비로 돌아갑니다 ");
-      navigate(`/${roomCode}/lobby`);
+      setRound(-1);
+
+      // 순위 알고리즘
+      const getResult = () =>
+        participant
+          .sort((prev, next) => {
+            if (prev.isExit !== next.isExit) {
+              return prev.isExit ? 1 : -1;
+            }
+            if (prev.speedList.length !== next.speedList.length) {
+              return next.speedList.length - prev.speedList.length;
+            }
+            if (prev.isDied !== next.isDied) {
+              return prev.isDied ? 1 : -1;
+            }
+            return 0;
+          })
+          // participant
+          //   .sort((prev, next) =>
+          //     prev.isExit === next.isExit
+          //       ? 0
+          //       : prev.isExit
+          //       ? 1
+          //       : -1 || next.speedList.length - prev.speedList.length || prev.isDied === next.isDied
+          //       ? 0
+          //       : prev.isDied
+          //       ? 1
+          //       : -1
+          //   )
+          // isExit, 순위, 본인여부, userColor, 닉네임, 평균클릭속도, 최고기록,
+          .map((item, index) => {
+            return {
+              isExit: item.isExit,
+              rank: index + 1,
+              isMe: socket.id === item.socketID,
+              userColor: item.userColor,
+              nickname: item.nickname,
+              avgSpeed: item.speedList.reduce((p, c) => p + c, 0) / item.speedList.length,
+              minSpeed: Math.min.apply(null, item.speedList),
+            };
+          });
+      renderDelay.current = setTimeout(() => {
+        setGameResult(getResult());
+      }, 500);
     });
 
     return () => {
@@ -176,7 +230,9 @@ const Reaction = () => {
 
   // Handle Participant - 참가자가 게임을 나가는 경우에 대한 처리
   useEffect(() => {
-    setParticipant(participant.filter((user) => userList.some((item) => item.socketID === user.socketID)));
+    setParticipant(
+      participant.map((user) => ({ ...user, isExit: !userList.some((item) => item.socketID === user.socketID) }))
+    );
   }, [userList]);
 
   // 버튼 클릭 시 조건에 맞게 역할 수행
@@ -206,27 +262,30 @@ const Reaction = () => {
   };
 
   return (
-    <Container>
-      <S.GameWrapper>
-        <S.WhiteSpaceTop>
-          <S.RoundContainer>
-            <S.Round> {!round ? "준비" : `Round ${round}`} </S.Round>
-          </S.RoundContainer>
-        </S.WhiteSpaceTop>
-        <S.GameMain>
-          <S.PlayerLayout>
-            <ParticipantList participant={participant.slice(0, 4)} />
-          </S.PlayerLayout>
-          <S.GameLayout>
-            <ReactionButton stat={stat} onClick={clickEventHandler} speed={speed} />
-          </S.GameLayout>
-          <S.PlayerLayout>
-            <ParticipantList participant={participant.slice(4, 8)} />
-          </S.PlayerLayout>
-        </S.GameMain>
-        <S.WhiteSpaceBottom />
-      </S.GameWrapper>
-    </Container>
+    <>
+      {gameResult && <Result gameResultData={gameResult} />}
+      <Container>
+        <S.GameWrapper>
+          <S.WhiteSpaceTop>
+            <S.RoundContainer>
+              <S.Round> {!round ? "준비" : round === -1 ? "게임 종료" : `Round ${round}`} </S.Round>
+            </S.RoundContainer>
+          </S.WhiteSpaceTop>
+          <S.GameMain>
+            <S.PlayerLayout>
+              <ParticipantList participant={participant.filter((user) => !user.isExit).slice(0, 4)} />
+            </S.PlayerLayout>
+            <S.GameLayout>
+              <ReactionButton stat={stat} onClick={clickEventHandler} speed={speed} />
+            </S.GameLayout>
+            <S.PlayerLayout>
+              <ParticipantList participant={participant.filter((user) => !user.isExit).slice(4, 8)} />
+            </S.PlayerLayout>
+          </S.GameMain>
+          <S.WhiteSpaceBottom />
+        </S.GameWrapper>
+      </Container>
+    </>
   );
 };
 
