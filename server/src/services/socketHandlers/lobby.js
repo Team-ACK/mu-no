@@ -40,7 +40,8 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
             socket.isMember = isMember;
             socket.nickname = nickname;
             socket.userColor = userColor;
-            socket.isReady = false;
+            socket.isLobbyReady = false;
+            socket.isGameReady = false;
             socket.isAlive = true;
 
             roomList[roomID].setUserList(socket.id);
@@ -96,7 +97,11 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
                 if (lastUser && isGaming) {
                     const adminID = getUsersInfo(roomID)[0].socketID;
                     const gameTitle = roomList[roomID].gameData.getGameTitle();
-                    io.to(adminID).emit(`${gameTitle}-last-user-exit`);
+                    if (socket.isReady) io.to(adminID).emit(`${gameTitle}-last-user-exit`);
+                    else {
+                        io.sockets.sockets.get(adminID).isGameReady = false;
+                        io.to(adminID).emit(`${gameTitle}-no-ready-last-user-exit`);
+                    }
                 }
                 socket.leave(roomID);
                 const usersInfo = await getUsersInfo(roomID);

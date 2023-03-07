@@ -98,7 +98,7 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
         const usersInfo = getUsersInfo(roomID);
         let allReady = true;
         usersInfo.forEach((user) => {
-            if (!user.isReady) {
+            if (!user.isGameReady) {
                 allReady = false;
             }
         });

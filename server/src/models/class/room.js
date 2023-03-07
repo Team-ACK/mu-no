@@ -60,7 +60,8 @@ class Room {
     endGame(io) {
         this.setIsGaming(false);
         for (let socket of io.sockets.sockets) {
-            socket[1].isReady = false;
+            socket[1].isLobbyReady = false;
+            socket[1].isGameReady = false;
             socket[1].isAlive = true;
         }
     }
