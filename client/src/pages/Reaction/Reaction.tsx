@@ -168,6 +168,9 @@ const Reaction = () => {
       socket?.on("reaction-last-user-exit", () => {
         socket?.emit("reaction-game-next-round", { roomID: roomCode, last: true });
       });
+      socket?.on("reaction-no-ready-last-user-exit", () => {
+        socket?.emit("reaction-game-ready", { roomID: roomCode });
+      });
     }
 
     socket?.on("reaction-game-end", (_: any) => {
@@ -189,19 +192,6 @@ const Reaction = () => {
             }
             return 0;
           })
-          // participant
-          //   .sort((prev, next) =>
-          //     prev.isExit === next.isExit
-          //       ? 0
-          //       : prev.isExit
-          //       ? 1
-          //       : -1 || next.speedList.length - prev.speedList.length || prev.isDied === next.isDied
-          //       ? 0
-          //       : prev.isDied
-          //       ? 1
-          //       : -1
-          //   )
-          // isExit, 순위, 본인여부, userColor, 닉네임, 평균클릭속도, 최고기록,
           .map((item, index) => {
             return {
               isExit: item.isExit,
@@ -225,6 +215,8 @@ const Reaction = () => {
       socket?.off("admin-exit");
       socket?.off("reaction-last-user-exit");
       socket?.off("reaction-game-end");
+      socket?.off("reaction-last-user-exit");
+      socket?.off("reaction-no-ready-last-user-exit");
     };
   }, [socket, isHost, roomCode, participant, stat, round]);
 

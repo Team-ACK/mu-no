@@ -101,7 +101,7 @@ const S = {
     border-radius: 12px;
     padding-left: 10px;
     font-size: 18px;
-    font-weight:400;
+    font-weight: 400;
     &:focus {
       outline: none;
     }
@@ -148,12 +148,15 @@ const MainElement = () => {
       </option>
     );
   });
+
   const kickPlayer = (event: React.MouseEvent<HTMLElement>) => {
     const index: string | null = event.currentTarget.getAttribute("data-react-key");
     if (index !== null) {
+      socket?.emit("kick-user", { roomID: roomCode, socketID: userList[parseInt(index, 10)].socketID });
       console.log(`강퇴당한 사람은 ${userList[parseInt(index, 10)].nickname} 입니다`);
     }
   };
+
   const addUserLayout = () => {
     const temp: JSX.Element[] = [];
 
@@ -216,6 +219,9 @@ const MainElement = () => {
     socket?.on("admin-exit", () => {
       setModal("HostDisconnected");
     });
+    socket?.on("kicked", () => {
+      setModal("Kicked");
+    });
     socket?.emit("get-max-players", { roomID: roomCode }, ({ maxPlayers }: { maxPlayers: number }) => {
       setPopulation(maxPlayers);
     });
@@ -224,6 +230,7 @@ const MainElement = () => {
       socket?.off("reaction-selected");
       socket?.off("get-max-players");
       socket?.off("admin-exit");
+      socket?.off("kicked");
     };
     // eslint-disable-next-line
   }, []);

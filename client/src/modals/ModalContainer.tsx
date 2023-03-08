@@ -6,6 +6,7 @@ import { SignUp } from "./SignUp";
 import { FindPassword } from "./FindPassword";
 import { ResetPassword } from "./ResetPassword";
 import { HostDisconnected } from "./HostDisconnected";
+import { Kicked } from "./Kicked";
 
 const boxFade = (nowScale: number) => keyframes`
   0% {
@@ -116,6 +117,8 @@ const ModalContainer = () => {
             <ResetPassword />
           ) : modal === "HostDisconnected" ? (
             <HostDisconnected />
+          ) : modal === "Kicked" ? (
+            <Kicked />
           ) : null}
         </S.InnerContainer>
       </S.Wrapper>
