@@ -40,17 +40,25 @@ const S = {
     z-index: 5;
     padding: 30px;
   `,
-  Wrapper: styled.div<{ nowScale: number }>`
+  Wrapper: styled.div<{
+    nowScale: number;
+    modal: "SignUp" | "FindPassword" | "ResetPassword" | "HostDisconnected" | "Kicked" | false;
+  }>`
     animation: 0.4s ease-in-out 0s 1 normal forwards running ${({ nowScale }) => boxFade(nowScale)};
     background: white;
     position: absolute;
     left: calc(100vw / 2 - 250px);
     top: calc(100vh / 2 - 350px);
+    /* top: ${({ modal }) => (modal === "Kicked" ? "calc(50vh - 200px)" : "calc(50vh - 350px)")}; */
+
     border-radius: 12px;
   `,
-  InnerContainer: styled(CommonStyle)`
+  InnerContainer: styled(CommonStyle)<{
+    modal: "SignUp" | "FindPassword" | "ResetPassword" | "HostDisconnected" | "Kicked" | false;
+  }>`
     width: 500px;
     height: 700px;
+    /* height: ${({ modal }) => (modal === "Kicked" ? "500" : "700")}; */
     padding: 15px 20px;
     border: 1px solid ${(props) => props.theme.palette.borderColor};
     box-shadow: 0px 0px 10px 2px ${(props) => props.theme.palette.shadowColor};
@@ -93,8 +101,8 @@ const ModalContainer = () => {
 
   return (
     <S.Background>
-      <S.Wrapper style={{ transform: `scale(${scale})` }} nowScale={scale}>
-        <S.InnerContainer>
+      <S.Wrapper style={{ transform: `scale(${scale})` }} nowScale={scale} modal={modal}>
+        <S.InnerContainer modal={modal}>
           <S.CloseLayout>
             <CloseImg
               width="25px"

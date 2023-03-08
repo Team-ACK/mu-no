@@ -29,6 +29,10 @@ const InputLayoutStyle = styled.div`
 `;
 
 const S = {
+  Wrapper: styled(CommonStyle)`
+    width: 100%;
+    height: 100%;
+  `,
   Top: styled(NonContentStyle)`
     color: #696eff;
     font-weight: 700;
@@ -43,7 +47,7 @@ const S = {
 
 const Kicked = () => {
   return (
-    <>
+    <S.Wrapper>
       <S.Top>
         <p>알림</p>
       </S.Top>
@@ -58,7 +62,7 @@ const Kicked = () => {
           홈으로 돌아가기
         </Button>
       </S.Bottom>
-    </>
+    </S.Wrapper>
   );
 };
 
