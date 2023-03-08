@@ -16,7 +16,8 @@ module.exports = (io) => {
                         nickname: item[1].nickname,
                         userColor: item[1].userColor,
                         socketID: item[1].id,
-                        isReady: item[1].isReady,
+                        isLobbyReady: item[1].isLobbyReady,
+                        isGameReady: item[1].isGameReady,
                         isMember: item[1].isMember,
                         isAlive: item[1].isAlive,
                     };

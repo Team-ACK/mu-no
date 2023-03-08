@@ -94,11 +94,11 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
     });
 
     socket.on("reaction-game-ready", ({ roomID }) => {
-        socket.isReady = !socket.isReady;
+        socket.isGameReady = !socket.isGameReady;
         const usersInfo = getUsersInfo(roomID);
         let allReady = true;
         usersInfo.forEach((user) => {
-            if (!user.isReady) {
+            if (!user.isGameReady) {
                 allReady = false;
             }
         });
