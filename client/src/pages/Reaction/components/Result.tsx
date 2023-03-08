@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { userStore } from "../../../store";
 import styled, { keyframes } from "styled-components";
+import { ReactComponent as GoldImg } from "../../../assets/img/medal-gold.svg";
+import { ReactComponent as SilverImg } from "../../../assets/img/medal-silver.svg";
+import { ReactComponent as BronzeImg } from "../../../assets/img/medal-bronze.svg";
 
 const boxFade = (nowScale: number) => keyframes`
   0% {
@@ -156,18 +159,38 @@ const Result = ({
                 </tr>
               </thead>
               <tbody>
-                {gameResultData.map((data) => (
-                  <tr>
-                    <td>{data.isExit ? "퇴장" : `${data.rank}등`}</td>
-                    {data.isMe ? (
-                      <td style={{ color: "#01b701", fontWeight: "bold" }}>{data.nickname}</td>
-                    ) : (
-                      <td style={{ color: "black" }}>{data.nickname}</td>
-                    )}
-                    <td>{isNaN(data.avgSpeed) ? "X" : `${parseFloat(data.avgSpeed.toFixed(1))}ms`}</td>
-                    <td>{!isFinite(data.avgSpeed) ? "X" : `${parseFloat(data.minSpeed.toFixed(1))}ms`}</td>
-                  </tr>
-                ))}
+                {gameResultData.map((data) => {
+                  const playerRank = data.rank;
+                  return (
+                    <tr>
+                      {/* <td>{data.isExit ? "퇴장" : `${data.rank}등`}</td> */}
+                      <td>
+                        {!data.isExit ? (
+                          playerRank === 1 ? (
+                            <GoldImg width="20px" height="20px" />
+                          ) : playerRank === 2 ? (
+                            <SilverImg width="20px" height="20px" />
+                          ) : playerRank === 3 ? (
+                            <BronzeImg width="20px" height="20px" />
+                          ) : (
+                            <p>{data.rank}등</p>
+                          )
+                        ) : (
+                          <p style={{ color: "red" }}>퇴장</p>
+                        )}
+                      </td>
+                      {data.isMe ? (
+                        <td style={{ color: "#01b701", fontWeight: "bold" }}>{data.nickname}</td>
+                      ) : (
+                        <td style={{ color: "black" }}>{data.nickname}</td>
+                      )}
+                      <td>{isNaN(data.avgSpeed) || data.isExit ? "X" : `${parseFloat(data.avgSpeed.toFixed(1))}ms`}</td>
+                      <td>
+                        {!isFinite(data.avgSpeed) || data.isExit ? "X" : `${parseFloat(data.minSpeed.toFixed(1))}ms`}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </S.Table>
           </S.Main>
