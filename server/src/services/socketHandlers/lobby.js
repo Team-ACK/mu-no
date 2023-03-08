@@ -73,6 +73,16 @@ module.exports = (io, socket, roomList, getUsersInfo) => {
         }
     });
 
+    socket.on("kick-user", ({ roomID, socketID }) => {
+        io.to(socketID).emit("kicked");
+        io.sockets.sockets.get(socketID).leave(roomID);
+
+        roomList[roomID].removeExitUser(socketID);
+
+        const usersInfo = getUsersInfo(roomID);
+        io.to(roomID).emit("user-list", { userList: usersInfo });
+    });
+
     socket.on("disconnecting", async () => {
         let roomID;
 
