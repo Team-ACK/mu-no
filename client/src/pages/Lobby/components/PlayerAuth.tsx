@@ -33,10 +33,10 @@ const PlayerAuth: React.FC<Props> = ({ useradmin, isHost, kickPlayer, index }: P
             <HostIcon fill="gold" width="25px" height="25px" />
           </S.PlayerAuth>
         ) : (
-          //   <S.PlayerAuth useradmin={useradmin} isHost={isHost} onClick={kickPlayer} data-react-key={index}>
-          //     {/* <KickIcon fill="red" width="25px" height="25px" /> */}
-          //   </S.PlayerAuth>
-          <> </>
+          <S.PlayerAuth useradmin={useradmin} isHost={isHost} onClick={kickPlayer} data-react-key={index}>
+            <KickIcon fill="red" width="25px" height="25px" />
+          </S.PlayerAuth>
+          // <> </>
         )
       ) : useradmin ? (
         <S.PlayerAuth useradmin={useradmin} isHost={isHost} onClick={kickPlayer} data-react-key={index}>
